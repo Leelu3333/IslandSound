@@ -44,7 +44,7 @@
 ## 快速開始
 
 ```bash
-git clone https://github.com/<your-username>/island-sound.git
+git clone https://github.com/Leelu3333/IslandSound.git
 cd island-sound
 npm install
 npm run dev

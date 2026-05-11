@@ -1,0 +1,40 @@
+/**
+ * Cloudflare Workers / Pages 部署設定
+ * 文件：https://developers.cloudflare.com/workers/wrangler/configuration/
+ *
+ * 這個檔案告訴 wrangler：
+ *   1. 這個 Worker 叫什麼名字
+ *   2. 部署的是 ./dist/ 裡的靜態檔案（Vite build 出來的）
+ *   3. 找不到的路徑要 fallback 到 index.html（讓 SPA client-side 路由能用）
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+
+  // Worker 名稱 — 會變成預設網址 https://island-sound.<你的帳號>.workers.dev
+  "name": "island-sound",
+
+  // 相容性日期 — Cloudflare 用這個來決定 Worker runtime 行為，設今天的日期就好
+  "compatibility_date": "2026-05-11",
+
+  // 不需要 main entry，因為這只是純靜態網站
+  // （如果以後要加 Worker 邏輯，再新增 "main": "src/worker.js"）
+
+  /**
+   * 靜態資源設定：把 ./dist/ 當作網站根目錄部署
+   */
+  "assets": {
+    "directory": "./dist",
+
+    // SPA 模式：找不到的 URL 全部回傳 index.html
+    // 例如直接訪問 /some-page 不會 404，而是讓 React 處理路由
+    "not_found_handling": "single-page-application"
+  },
+
+  /**
+   * 觀測設定（選用，但建議開）
+   * Workers 預設會記錄請求數、CPU 時間等，方便日後 debug
+   */
+  "observability": {
+    "enabled": true
+  }
+}
