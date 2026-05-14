@@ -334,7 +334,9 @@ export function TaiwanMap({ pins, activeMonth, activeRegion, onPinClick, hovered
 
             {/* ── Hover Tooltip ── */}
             {isHover && (() => {
-              const sideLeft = cx < 280;
+              // 左側 pin → tooltip 往右展；右側 pin → 往左展
+              // 各螢幕尺寸統一這個行為，避免 tooltip 被遮住或超出邊緣
+              const sideLeft = cx >= 280;
 
               if (hasMultiple) {
                 /* 多筆資料：列出所有節目名稱與日期 */

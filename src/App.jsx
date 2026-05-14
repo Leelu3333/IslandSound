@@ -1,6 +1,8 @@
 // Main app — 島嶼樂遊 / Island Sound
 import { useState, useMemo, useEffect } from 'react';
 import { TaiwanMap } from './components/TaiwanMap.jsx';
+import { MobileApp } from './components/MobileApp.jsx';
+import { TabletApp } from './components/TabletApp.jsx';
 import {
   useTweaks,
   TweaksPanel,
@@ -10,6 +12,25 @@ import {
 } from './components/tweaks/TweaksPanel.jsx';
 import { REGIONS, MONTHS } from './data/festivals.js';
 import { loadFestivals, FALLBACK_FESTIVALS } from './lib/loadFestivals.js';
+
+// ───────────────────────── Responsive hook ─────────────────────────
+// 回傳 'mobile' (<768)、'tablet' (768–1279)、'desktop' (>=1280)
+function useViewport() {
+  const compute = (w) => {
+    if (w < 768) return 'mobile';
+    if (w < 1280) return 'tablet';
+    return 'desktop';
+  };
+  const [vp, setVp] = useState(() =>
+    typeof window !== 'undefined' ? compute(window.innerWidth) : 'desktop',
+  );
+  useEffect(() => {
+    const onResize = () => setVp(compute(window.innerWidth));
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return vp;
+}
 
 const PALETTES = {
   warm: {
@@ -719,6 +740,8 @@ function App() {
     document.documentElement.dataset.serif = t.showSerif ? 'on' : 'off';
   }, [t.density, t.showSerif]);
 
+  const viewport = useViewport(); // 'mobile' | 'tablet' | 'desktop'
+
   const [festivals, setFestivals] = useState(FALLBACK_FESTIVALS);
 
   // 啟動時非同步從 Supabase 撈，成功就覆蓋本機資料
@@ -794,6 +817,71 @@ function App() {
     setApplied({ ...BLANK_FILTER });
   };
 
+  // ──── Mobile branch (<768px) ────
+  if (viewport === 'mobile') {
+    return (
+      <div className="app">
+        <MobileApp
+          festivals={festivals}
+          visible={visible}
+          mapMonth={mapMonth}
+          setMapMonth={setMapMonth}
+          hoveredId={hoveredId}
+          setHoveredId={setHoveredId}
+          draft={draft}
+          setDraft={setDraft}
+          applied={applied}
+          onSave={handleSave}
+          onPinClick={handlePinClick}
+          onApply={handleApply}
+          onReset={handleReset}
+        />
+        <TweaksPanel title="Tweaks">
+          <TweakSection label="Palette">
+            <PalettePicker
+              value={t.palette}
+              onChange={(v) => setTweak('palette', v)}
+            />
+          </TweakSection>
+        </TweaksPanel>
+      </div>
+    );
+  }
+
+  // ──── Tablet branch (768–1279px) ────
+  if (viewport === 'tablet') {
+    return (
+      <div className="app">
+        <TabletApp
+          festivals={festivals}
+          visible={visible}
+          mapMonth={mapMonth}
+          setMapMonth={setMapMonth}
+          hoveredId={hoveredId}
+          setHoveredId={setHoveredId}
+          draft={draft}
+          setDraft={setDraft}
+          applied={applied}
+          sortMode={sortMode}
+          setSortMode={setSortMode}
+          onSave={handleSave}
+          onPinClick={handlePinClick}
+          onApply={handleApply}
+          onReset={handleReset}
+        />
+        <TweaksPanel title="Tweaks">
+          <TweakSection label="Palette">
+            <PalettePicker
+              value={t.palette}
+              onChange={(v) => setTweak('palette', v)}
+            />
+          </TweakSection>
+        </TweaksPanel>
+      </div>
+    );
+  }
+
+  // ──── Desktop branch (>=1280px) ────
   return (
     <div className="app">
       <Header />
