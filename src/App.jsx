@@ -482,7 +482,7 @@ function FestivalCard({ f, isHovered, setHoveredId, onSave, onDetail }) {
 
         <div className="fest-artists">
           <div className="fest-artists-label mono">LINEUP</div>
-          <div className="fest-artists-list">
+          <div className="fest-artists-list" title={f.artists.join(' · ')}>
             {f.artists.map((a, i) => (
               <span key={a} className="artist-tag">
                 {a}
@@ -504,9 +504,6 @@ function FestivalCard({ f, isHovered, setHoveredId, onSave, onDetail }) {
   );
 }
 
-// ───────────────────────── Results panel ─────────────────────────
-const PER_PAGE = 9;
-
 function ResultsPanel({
   festivals,
   sortMode,
@@ -518,15 +515,7 @@ function ResultsPanel({
   monthStart,
   monthEnd,
 }) {
-  const [page, setPage] = useState(0);
-
-  // 篩選條件改變時回到第一頁
-  useEffect(() => {
-    setPage(0);
-  }, [festivals]);
-
-  const totalPages = Math.max(1, Math.ceil(festivals.length / PER_PAGE));
-  const pageItems = festivals.slice(page * PER_PAGE, (page + 1) * PER_PAGE);
+  const [viewMode, setViewMode] = useState('grid');
 
   // 時間範圍顯示文字
   const timeLabel =
@@ -569,7 +558,11 @@ function ResultsPanel({
             </button>
           </div>
           <div className="view-group mono">
-            <button className="view-btn view-btn--on" aria-label="grid">
+            <button
+              className={`view-btn ${viewMode === 'grid' ? 'view-btn--on' : ''}`}
+              aria-label="grid"
+              onClick={() => setViewMode('grid')}
+            >
               <svg viewBox="0 0 16 16" width="14" height="14">
                 <rect
                   x="1"
@@ -609,7 +602,11 @@ function ResultsPanel({
                 />
               </svg>
             </button>
-            <button className="view-btn" aria-label="list">
+            <button
+              className={`view-btn ${viewMode === 'list' ? 'view-btn--on' : ''}`}
+              aria-label="list"
+              onClick={() => setViewMode('list')}
+            >
               <svg viewBox="0 0 16 16" width="14" height="14">
                 <line
                   x1="2"
@@ -647,45 +644,95 @@ function ResultsPanel({
           <h3 className="serif">這個篩選條件下沒有節目</h3>
           <p>試試切換月份，或清除地區篩選。</p>
         </div>
+      ) : viewMode === 'grid' ? (
+        <div className="card-grid">
+          {festivals.map((f) => (
+            <FestivalCard
+              key={f.id}
+              f={f}
+              isHovered={hoveredId === f.id}
+              setHoveredId={setHoveredId}
+              onSave={onSave}
+              onDetail={() => {}}
+            />
+          ))}
+        </div>
       ) : (
-        <>
-          <div className="card-grid">
-            {pageItems.map((f) => (
-              <FestivalCard
-                key={f.id}
-                f={f}
-                isHovered={hoveredId === f.id}
-                setHoveredId={setHoveredId}
-                onSave={onSave}
-                onDetail={() => {}}
-              />
-            ))}
-          </div>
-
-          {totalPages > 1 && (
-            <div className="pagination">
-              <button
-                className="pg-btn mono"
-                onClick={() => setPage((p) => p - 1)}
-                disabled={page === 0}
-              >
-                ← 上一頁
-              </button>
-              <span className="pg-info mono">
-                {page + 1} <span className="pg-sep">/</span> {totalPages}
-              </span>
-              <button
-                className="pg-btn mono"
-                onClick={() => setPage((p) => p + 1)}
-                disabled={page === totalPages - 1}
-              >
-                下一頁 →
-              </button>
-            </div>
-          )}
-        </>
+        <FestivalList
+          festivals={festivals}
+          hoveredId={hoveredId}
+          setHoveredId={setHoveredId}
+          onSave={onSave}
+        />
       )}
     </section>
+  );
+}
+
+// ───────────────────────── Festival list (table-ish) ─────────────────────────
+function FestivalList({ festivals, hoveredId, setHoveredId, onSave }) {
+  return (
+    <div className="fest-list">
+      <div className="fest-list-head mono">
+        <span className="col-date">日期</span>
+        <span className="col-name">音樂祭</span>
+        <span className="col-region">地區</span>
+        <span className="col-venue">場地</span>
+        <span className="col-artists">主要藝人</span>
+        <span className="col-action"></span>
+      </div>
+      {festivals.map((f, i) => {
+        const isHovered = hoveredId === f.id;
+        return (
+          <div
+            key={f.id}
+            className={`fest-list-row ${isHovered ? 'fest-list-row--hover' : ''}`}
+            onMouseEnter={() => setHoveredId(f.id)}
+            onMouseLeave={() => setHoveredId(null)}
+          >
+            <span className="col-num mono">{String(i + 1).padStart(2, '0')}</span>
+            <div className="col-date">
+              <div className="list-date serif">{fmtRange(f.dateStart, f.dateEnd)}</div>
+              <div className="list-date-sub mono">{f.dateStart.slice(0, 4)}</div>
+            </div>
+            <div className="col-name">
+              <div className="list-name serif">{f.name}</div>
+              <div className="list-name-en mono">{f.nameEn}</div>
+            </div>
+            <div className="col-region">{f.region}</div>
+            <div className="col-venue">{f.venue}</div>
+            <div className="col-artists" title={f.artists.join(' · ')}>
+              {f.artists.map((a, j) => (
+                <span key={a}>
+                  {a}
+                  {j < f.artists.length - 1 && <span className="dot-sep"> · </span>}
+                </span>
+              ))}
+            </div>
+            <div className="col-action">
+              <button
+                className={`save-btn save-btn--sm ${f.saved ? 'save-btn--on' : ''}`}
+                onClick={() => onSave(f.id)}
+                aria-label="收藏"
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14">
+                  <path
+                    d="M12 21s-7.5-4.5-9.5-9.5C1 7.5 4 4 7.5 4c1.7 0 3.3 0.8 4.5 2.2C13.2 4.8 14.8 4 16.5 4 20 4 23 7.5 21.5 11.5 19.5 16.5 12 21 12 21Z"
+                    fill={f.saved ? 'var(--accent)' : 'none'}
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+              <button className="list-detail-btn" aria-label="詳情">
+                →
+              </button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 

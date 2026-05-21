@@ -114,6 +114,15 @@ const TAIWAN_PATH = [
 export function TaiwanMap({ pins, activeMonth, activeRegion, onPinClick, hoveredId, setHoveredId }) {
   const visible = pins.filter((p) => p.month === activeMonth);
 
+  const regionMap = {};
+  pins.forEach((p) => {
+    if (!regionMap[p.region]) regionMap[p.region] = [];
+    regionMap[p.region].push(p);
+  });
+  Object.values(regionMap).forEach((group) => {
+    group.sort((a, b) => a.dateStart.localeCompare(b.dateStart));
+  });
+
   // 同月同地點 → 以 region 為 key 合併成群組（同 coord 的節目合成一個 pin）
   const groupMap = {};
   visible.forEach((p) => {
@@ -121,6 +130,16 @@ export function TaiwanMap({ pins, activeMonth, activeRegion, onPinClick, hovered
     groupMap[p.region].push(p);
   });
   const pinGroups = Object.values(groupMap);
+  const orderedPinGroups = [
+    ...pinGroups.filter((group) => {
+      const regionGroup = regionMap[group[0].region] ?? group;
+      return !regionGroup.some((f) => f.id === hoveredId);
+    }),
+    ...pinGroups.filter((group) => {
+      const regionGroup = regionMap[group[0].region] ?? group;
+      return regionGroup.some((f) => f.id === hoveredId);
+    }),
+  ];
 
   return (
     <svg
@@ -255,14 +274,15 @@ export function TaiwanMap({ pins, activeMonth, activeRegion, onPinClick, hovered
         strokeLinecap="round" />
 
 {/* ── Pins（群組化：同月同地點合為一個 pin） ── */}
-      {pinGroups.map((group) => {
+      {orderedPinGroups.map((group) => {
         const p = group[0]; // 以第一筆的座標為基準
+        const regionGroup = regionMap[p.region] ?? group;
         const cx = BX + p.coord.x * BW;
         const cy = BY + p.coord.y * BH;
-        // 只要群組中任一節目被 hover，整個群組 pin 都顯示 hover 狀態
-        const isHover = group.some((f) => f.id === hoveredId);
+        // 只要同地區任一節目被 hover，整個地區 pin 都顯示 hover 狀態
+        const isHover = regionGroup.some((f) => f.id === hoveredId);
         const isFiltered = activeRegion && activeRegion !== p.region;
-        const hasMultiple = group.length > 1;
+        const hasMultiple = regionGroup.length > 1;
         const labelLeft = cx < 280;
         const labelOffsetX = labelLeft ? -14 : 14;
 
@@ -327,7 +347,7 @@ export function TaiwanMap({ pins, activeMonth, activeRegion, onPinClick, hovered
                 <circle cx="10" cy="-16" r="8" fill="var(--accent)" stroke="var(--bg)" strokeWidth="1.5" />
                 <text x="10" y="-12" textAnchor="middle" fontSize="9" fill="var(--bg)"
                   fontFamily="'JetBrains Mono', monospace" fontWeight="700">
-                  {group.length}
+                  {regionGroup.length}
                 </text>
               </g>
             }
@@ -343,7 +363,7 @@ export function TaiwanMap({ pins, activeMonth, activeRegion, onPinClick, hovered
                 const tooltipW = 310;
                 const headerH = 46;
                 const rowH = 56;
-                const tooltipH = headerH + rowH * group.length + 12;
+                const tooltipH = headerH + rowH * regionGroup.length + 12;
                 const tx = sideLeft ? -(tooltipW + 18) : 18;
                 const ty = -tooltipH / 2;
 
@@ -361,13 +381,13 @@ export function TaiwanMap({ pins, activeMonth, activeRegion, onPinClick, hovered
                     </text>
                     <text x={tooltipW - 16} y="20" textAnchor="end" fontSize="11"
                       fill="var(--accent)" fontFamily="'JetBrains Mono', monospace" letterSpacing="1">
-                      {group.length} 場音樂祭
+                      {regionGroup.length} 場音樂祭
                     </text>
                     <line x1="12" y1="32" x2={tooltipW - 12} y2="32"
                       stroke="var(--paper-deep)" strokeWidth="0.6" opacity="0.3" />
 
                     {/* 各節目列 */}
-                    {group.map((f, idx) => (
+                    {regionGroup.map((f, idx) => (
                       <g key={f.id} transform={`translate(0, ${headerH + rowH * idx})`}>
                         {idx > 0 &&
                           <line x1="12" y1="0" x2={tooltipW - 12} y2="0"

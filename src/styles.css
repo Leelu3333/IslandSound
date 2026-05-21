@@ -555,13 +555,115 @@ a { color: inherit; }
   .card-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
+/* ─── Festival list view ─── */
+.fest-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--ink-faint);
+}
+.fest-list-head,
+.fest-list-row {
+  display: grid;
+  grid-template-columns: 36px 110px 1.6fr 70px 1.1fr 1.4fr 70px;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 6px;
+  border-bottom: 1px dashed var(--ink-faint);
+}
+.fest-list-head {
+  border-bottom: 1px solid var(--ink-faint);
+  padding: 10px 6px;
+  color: var(--ink-soft);
+  letter-spacing: 0.1em;
+}
+.fest-list-head > * {
+  font-size: 10px;
+}
+.fest-list-head .col-date { grid-column-start: 2; }
+.fest-list-row {
+  transition: background 0.15s ease;
+  cursor: pointer;
+}
+.fest-list-row:hover,
+.fest-list-row--hover {
+  background: var(--paper);
+}
+.col-num {
+  color: var(--ink-faint);
+  font-size: 10px;
+}
+.list-date {
+  font-size: 16px;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.list-date-sub {
+  font-size: 10px;
+  color: var(--ink-soft);
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+.list-name {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.list-name-en {
+  font-size: 10px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+  letter-spacing: 0.08em;
+}
+.col-region {
+  font-size: 13px;
+  color: var(--ink);
+}
+.col-venue {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.col-artists {
+  font-size: 12px;
+  color: var(--ink);
+  line-height: 1.45;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.col-artists .dot-sep { color: var(--ink-faint); }
+.col-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.save-btn--sm {
+  width: 28px;
+  height: 28px;
+}
+.list-detail-btn {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 18px;
+  padding: 4px 6px;
+  font-family: var(--font-serif);
+  transition: color 0.15s, transform 0.2s;
+}
+.list-detail-btn:hover {
+  color: var(--ink);
+  transform: translateX(2px);
+}
+
 /* ─── Festival card ─── */
 .fest-card {
   position: relative;
   background: var(--bg);
   border: 1px solid var(--ink-faint);
   border-radius: 14px;
-  /* overflow: hidden 移除 — 避免裁切愛心動畫；ribbon 自己加 border-radius */
+  overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   display: flex;
   flex-direction: column;
@@ -573,11 +675,8 @@ a { color: inherit; }
 }
 .fest-card-ribbon {
   height: 3px;
-  /* 兩端內縮，避開卡片圓角區域，視覺上才不會凸出 */
-  width: calc(100% - 16px);
-  margin: 0 8px;
+  width: 100%;
   background: var(--camel);
-  border-radius: 2px;
 }
 .fest-card-body {
   padding: var(--pad-card);
@@ -662,10 +761,17 @@ a { color: inherit; }
 .fest-artists-label { margin-bottom: 8px; color: var(--ink-soft); }
 .fest-artists-list {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 6px;
+  max-height: 28px;
+  overflow: hidden;
+  position: relative;
+  -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%);
+  mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%);
 }
 .artist-tag {
+  flex-shrink: 0;
+  white-space: nowrap;
   font-size: 12px;
   padding: 4px 10px;
   background: var(--paper);
@@ -707,41 +813,6 @@ a { color: inherit; }
 }
 .empty-state h3 { margin: 0 0 8px; font-size: 22px; color: var(--ink); }
 .empty-state p { margin: 0; font-size: 14px; }
-
-/* ─── Pagination ─── */
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 28px;
-  padding: 32px 0 8px;
-  margin-top: var(--gap-card);
-  border-top: 1px dashed var(--ink-faint);
-}
-.pg-btn {
-  background: transparent;
-  border: 1px solid var(--ink-faint);
-  border-radius: 6px;
-  padding: 8px 22px;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: var(--ink-soft);
-  transition: all 0.15s;
-}
-.pg-btn:hover:not(:disabled) {
-  border-color: var(--ink);
-  color: var(--ink);
-  background: var(--paper);
-}
-.pg-btn:disabled { opacity: 0.28; cursor: not-allowed; }
-.pg-info {
-  font-size: 14px;
-  color: var(--ink);
-  letter-spacing: 0.06em;
-  min-width: 60px;
-  text-align: center;
-}
-.pg-sep { color: var(--ink-faint); margin: 0 4px; }
 
 /* ─── Footer ─── */
 .site-footer {
