@@ -17,7 +17,7 @@ function fmtRange(a, b) {
 }
 
 // ───────── Festival card (mobile) ─────────
-function MFestCard({ f, onSave }) {
+function MFestCard({ f, onSave, onOpen }) {
   return (
     <article className="m-card">
       <div className="m-card-ribbon" />
@@ -60,7 +60,9 @@ function MFestCard({ f, onSave }) {
       </dl>
       <p className="m-card-blurb">{f.blurb}</p>
       <div className="m-card-foot">
-        <span className="m-arrow serif">了解更多 →</span>
+        <button className="m-arrow serif" onClick={() => onOpen(f.id)}>
+          了解更多 →
+        </button>
         <span className="m-id mono">No. {f.id.slice(0, 6).toUpperCase()}</span>
       </div>
     </article>
@@ -222,6 +224,7 @@ export function MobileApp({
   onPinClick,
   onApply,
   onReset,
+  onOpen,
 }) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const activeCount = visible.length;
@@ -416,7 +419,7 @@ export function MobileApp({
           </div>
         ) : (
           visible.map((f) => (
-            <MFestCard key={f.id} f={f} onSave={onSave} />
+            <MFestCard key={f.id} f={f} onSave={onSave} onOpen={onOpen} />
           ))
         )}
       </section>

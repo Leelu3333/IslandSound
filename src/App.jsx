@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { TaiwanMap } from './components/TaiwanMap.jsx';
 import { MobileApp } from './components/MobileApp.jsx';
 import { TabletApp } from './components/TabletApp.jsx';
+import { FestivalDetail } from './components/FestivalDetail.jsx';
 import {
   useTweaks,
   TweaksPanel,
@@ -511,6 +512,7 @@ function ResultsPanel({
   hoveredId,
   setHoveredId,
   onSave,
+  onOpen,
   activeRegion,
   monthStart,
   monthEnd,
@@ -653,7 +655,7 @@ function ResultsPanel({
               isHovered={hoveredId === f.id}
               setHoveredId={setHoveredId}
               onSave={onSave}
-              onDetail={() => {}}
+              onDetail={() => onOpen(f.id)}
             />
           ))}
         </div>
@@ -663,6 +665,7 @@ function ResultsPanel({
           hoveredId={hoveredId}
           setHoveredId={setHoveredId}
           onSave={onSave}
+          onOpen={onOpen}
         />
       )}
     </section>
@@ -670,7 +673,7 @@ function ResultsPanel({
 }
 
 // ───────────────────────── Festival list (table-ish) ─────────────────────────
-function FestivalList({ festivals, hoveredId, setHoveredId, onSave }) {
+function FestivalList({ festivals, hoveredId, setHoveredId, onSave, onOpen }) {
   return (
     <div className="fest-list">
       <div className="fest-list-head mono">
@@ -687,6 +690,7 @@ function FestivalList({ festivals, hoveredId, setHoveredId, onSave }) {
           <div
             key={f.id}
             className={`fest-list-row ${isHovered ? 'fest-list-row--hover' : ''}`}
+            onClick={() => onOpen(f.id)}
             onMouseEnter={() => setHoveredId(f.id)}
             onMouseLeave={() => setHoveredId(null)}
           >
@@ -712,7 +716,10 @@ function FestivalList({ festivals, hoveredId, setHoveredId, onSave }) {
             <div className="col-action">
               <button
                 className={`save-btn save-btn--sm ${f.saved ? 'save-btn--on' : ''}`}
-                onClick={() => onSave(f.id)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onSave(f.id);
+                }}
                 aria-label="收藏"
               >
                 <svg viewBox="0 0 24 24" width="14" height="14">
@@ -725,7 +732,14 @@ function FestivalList({ festivals, hoveredId, setHoveredId, onSave }) {
                   />
                 </svg>
               </button>
-              <button className="list-detail-btn" aria-label="詳情">
+              <button
+                className="list-detail-btn"
+                aria-label="詳情"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onOpen(f.id);
+                }}
+              >
                 →
               </button>
             </div>
@@ -800,6 +814,7 @@ function App() {
   const [mapMonth, setMapMonth] = useState(4);
   const [hoveredId, setHoveredId] = useState(null);
   const [sortMode, setSortMode] = useState('date');
+  const [openId, setOpenId] = useState(null);
 
   const BLANK_FILTER = {
     q: '',
@@ -863,6 +878,14 @@ function App() {
     setDraft({ ...BLANK_FILTER });
     setApplied({ ...BLANK_FILTER });
   };
+  const selectedFestival = festivals.find((f) => f.id === openId);
+  const detailOverlay = selectedFestival ? (
+    <FestivalDetail
+      festival={selectedFestival}
+      onClose={() => setOpenId(null)}
+      onSave={handleSave}
+    />
+  ) : null;
 
   // ──── Mobile branch (<768px) ────
   if (viewport === 'mobile') {
@@ -882,7 +905,9 @@ function App() {
           onPinClick={handlePinClick}
           onApply={handleApply}
           onReset={handleReset}
+          onOpen={setOpenId}
         />
+        {detailOverlay}
         <TweaksPanel title="Tweaks">
           <TweakSection label="Palette">
             <PalettePicker
@@ -915,7 +940,9 @@ function App() {
           onPinClick={handlePinClick}
           onApply={handleApply}
           onReset={handleReset}
+          onOpen={setOpenId}
         />
+        {detailOverlay}
         <TweaksPanel title="Tweaks">
           <TweakSection label="Palette">
             <PalettePicker
@@ -965,6 +992,7 @@ function App() {
           activeRegion={applied.region}
           monthStart={applied.monthStart}
           monthEnd={applied.monthEnd}
+          onOpen={setOpenId}
         />
       </div>
 
@@ -983,6 +1011,8 @@ function App() {
           <a href="#">Newsletter</a>
         </div>
       </footer>
+
+      {detailOverlay}
 
       <TweaksPanel title="Tweaks">
         <TweakSection label="Palette">

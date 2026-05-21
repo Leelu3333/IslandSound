@@ -17,7 +17,7 @@ function fmtRange(a, b) {
 }
 
 // ───────── Festival card (tablet) ─────────
-function TFestCard({ f, onSave }) {
+function TFestCard({ f, onSave, onOpen }) {
   return (
     <article className="t-card">
       <div className="t-card-ribbon" />
@@ -61,7 +61,9 @@ function TFestCard({ f, onSave }) {
         </dl>
         <p className="t-card-blurb">{f.blurb}</p>
         <div className="t-card-foot">
-          <span className="t-arrow">了解更多 →</span>
+          <button className="t-arrow" onClick={() => onOpen(f.id)}>
+            了解更多 →
+          </button>
           <span className="t-id mono">No. {f.id.slice(0, 6).toUpperCase()}</span>
         </div>
       </div>
@@ -213,6 +215,7 @@ export function TabletApp({
   onPinClick,
   onApply,
   onReset,
+  onOpen,
 }) {
   // Orientation: portrait (width < height or width <= 1024)
   const [orientation, setOrientation] = useState(() =>
@@ -390,7 +393,7 @@ export function TabletApp({
           ) : (
             <div className="t-cards">
               {visible.map((f) => (
-                <TFestCard key={f.id} f={f} onSave={onSave} />
+                <TFestCard key={f.id} f={f} onSave={onSave} onOpen={onOpen} />
               ))}
             </div>
           )}
