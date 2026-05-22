@@ -124,7 +124,16 @@ export function FestivalDetail({ festival, onClose, onSave }) {
         </header>
 
         <div className="detail-hero-image">
-          <MediaSlot label="官方主視覺" />
+          {f.kvImageUrl ? (
+            <img
+              className="detail-hero-img"
+              src={f.kvImageUrl}
+              alt={`${f.name} 主視覺`}
+              loading="lazy"
+            />
+          ) : (
+            <MediaSlot label="官方主視覺" />
+          )}
           <div className="detail-hero-caption mono">主視覺 · 官方照片</div>
         </div>
 

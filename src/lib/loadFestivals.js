@@ -17,6 +17,7 @@ function mapRow(row) {
     blurb: row.blurb,
     artists: row.artists ?? [],
     coord: row.coord ?? { x: 0, y: 0 },
+    kvImageUrl: row.kv_image_url ?? null, // 主視覺圖片（無圖則 null）
     saved: false, // 之後接 localStorage
   };
 }
