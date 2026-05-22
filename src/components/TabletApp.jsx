@@ -216,6 +216,7 @@ export function TabletApp({
   onApply,
   onReset,
   onOpen,
+  onSubmit,
 }) {
   // Orientation: portrait (width < height or width <= 1024)
   const [orientation, setOrientation] = useState(() =>
@@ -404,6 +405,9 @@ export function TabletApp({
         <div className="serif">島嶼樂遊</div>
         <div className="mono">
           一份非營利的台灣音樂祭索引 · ISLAND · SOUND · 2026
+        </div>
+        <div className="mono" style={{ marginTop: '4px', opacity: 0.65 }}>
+          如資料有誤，歡迎使用<button onClick={onSubmit} style={{ background: 'none', border: 'none', padding: 0, textDecoration: 'underline', textUnderlineOffset: '2px', cursor: 'pointer', font: 'inherit', color: 'inherit', letterSpacing: 'inherit' }}>投稿</button>功能給我們回饋
         </div>
         <div className="t-footer-links mono">
           <a href="#">關於</a>

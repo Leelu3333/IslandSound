@@ -1,19 +1,21 @@
 # 島嶼樂遊 · Island Sound
 
 > 一份非營利、由樂迷協作維護的台灣音樂祭索引。
-> 從北方海岬的浪潮、中部草原的低頻，到南國港邊的吶喊——一座島，十二個月份，數十場關於聽覺的旅行。
+> 從北方海岬的浪潮、中部草原的低頻，到南國港邊的吶喊 —— 一座島，十二個月份，數十場關於聽覺的旅行。
 
 ---
 
 ## 預覽
 
-> 截圖待補。`npm run dev` 後可在 `http://localhost:5173` 看到完整介面。
+> `npm run dev` 後可在 `http://localhost:5173` 看到完整介面。
 
 主畫面包含：
 
-- 月份篩選——點擊任一月份，地圖上的 pin 即時切換
-- 節目單卡片（搜尋、地區、時間範圍、收藏）
-- 浮動 Tweaks 面板（即時切換配色與密度）
+- 互動式月份地圖——點擊月份，台灣地圖上的 pin 即時切換
+- 節目單卡片與列表（支援搜尋、地區、時間範圍、收藏）
+- 音樂祭詳情 overlay
+- 投稿 modal（樂迷回報資料補正）
+- 響應式佈局：桌機 / 平板 / 手機三種排版自動切換
 
 ---
 
@@ -22,22 +24,24 @@
 **互動式月份地圖**
 12 個月份按鈕對應地圖上的 pin。同月、同地區的多場音樂祭會自動合併為單一 pin，hover 時展開所有節目資訊。
 
-**篩選器**
-地區（16 縣市）、時間範圍（單排月份點選起始/結束）、關鍵字（音樂祭名稱、地區、藝人）三維度組合查詢。
+**三維度篩選器**
+地區（16 縣市）、時間範圍（單排月份點選起始/結束）、關鍵字（音樂祭名稱、地區、藝人）組合查詢；地圖 pin 點擊亦可即時套用地區篩選。
 
-**收藏清單**
-把感興趣的音樂祭加入收藏，可依日期／地區／收藏狀態排序。
+**音樂祭詳情頁**
+點擊「了解更多」後以 overlay 方式顯示，包含完整陣容、場地資訊與官網連結。
 
 ---
 
 ## 技術棧
 
-| 類別     | 選擇                               |
-| -------- | ---------------------------------- |
-| 建置工具 | Vite 5                             |
-| UI       | React 18                           |
-| 樣式     | 純 CSS                             |
-| 字體     | Noto Serif/Sans TC、JetBrains Mono |
+| 類別       | 選擇                                        |
+| ---------- | ------------------------------------------- |
+| 建置工具   | Vite 5                                      |
+| UI         | React 18                                    |
+| 樣式       | 純 CSS（CSS custom properties 配色系統）    |
+| 資料庫     | Supabase（PostgreSQL + `@supabase/supabase-js`）|
+| 部署       | Cloudflare Workers（靜態資產 + SPA 模式）   |
+| 字體       | Noto Serif/Sans TC、JetBrains Mono          |
 
 ---
 
@@ -52,38 +56,87 @@ npm run dev
 
 開啟瀏覽器到 `http://localhost:5173` 即可預覽。
 
+### 環境變數
+
+專案支援 Supabase 作為遠端資料來源，未設定時自動 fallback 至本機靜態資料。在根目錄建立 `.env.local`：
+
+```env
+VITE_SUPABASE_URL=https://<your-project>.supabase.co
+VITE_SUPABASE_ANON_KEY=<your-anon-key>
+```
+
+兩個變數皆未設定（或檔案不存在）時，頁面仍可正常運作，資料來自 `src/data/festivals.js` 的 `FALLBACK_FESTIVALS`。
+
 ### 可用的 npm scripts
 
-| 指令              | 用途                      |
-| ----------------- | ------------------------- |
-| `npm run dev`     | 啟動 dev server（含 HMR） |
-| `npm run build`   | 打包正式版到 `dist/`      |
-| `npm run preview` | 本地預覽 build 後的版本   |
+| 指令              | 用途                                        |
+| ----------------- | ------------------------------------------- |
+| `npm run dev`     | 啟動 dev server（含 HMR）                   |
+| `npm run build`   | 打包正式版到 `dist/`                        |
+| `npm run preview` | 本地預覽 build 後的版本                     |
+| `npm run deploy`  | build 後直接部署至 Cloudflare Workers       |
 
 ---
 
 ## 專案結構
 
 ```
-src/
-├── main.jsx                    # React 入口（ReactDOM.createRoot）
-├── App.jsx                     # 主應用元件
-├── styles.css                  # 全域樣式（配色 + layout）
-├── components/
-│   ├── TaiwanMap.jsx           # 手繪台灣地圖 + 互動 pins
-│   └── tweaks/
-│       └── TweaksPanel.jsx     # 即時微調面板（配色、密度等）
-└── data/
-    └── festivals.js            # 音樂祭資料 + 地區、月份常數
+island-sound/
+├── index.html
+├── vite.config.js
+├── wrangler.jsonc               # Cloudflare Workers 部署設定
+├── src/
+│   ├── main.jsx                 # React 入口（ReactDOM.createRoot）
+│   ├── App.jsx                  # 主應用元件（響應式分支、狀態管理）
+│   ├── styles.css               # 全域樣式（配色 tokens、layout、元件樣式）
+│   ├── components/
+│   │   ├── TaiwanMap.jsx        # 手繪 SVG 台灣地圖 + 互動 pins
+│   │   ├── FestivalDetail.jsx   # 音樂祭詳情 overlay
+│   │   ├── SubmitModal.jsx      # 投稿 modal（表單驗證 + captcha）
+│   │   ├── MobileApp.jsx        # 手機版佈局（<768px）
+│   │   └── TabletApp.jsx        # 平板版佈局（768–1279px）
+│   ├── data/
+│   │   └── festivals.js         # 靜態音樂祭資料 + REGIONS / MONTHS 常數
+│   └── lib/
+│       ├── supabase.js          # Supabase client 初始化（env 未設定時為 null）
+│       └── loadFestivals.js     # 從 Supabase 撈資料，失敗時回傳 null
+└── supabase/
+    ├── migrations/
+    │   └── 20260510000000_init_schema.sql   # DB schema 初始化
+    └── seed.sql                             # 測試資料
 ```
+
+---
+
+## 資料來源
+
+啟動時 App 會先以 `FALLBACK_FESTIVALS`（`src/data/festivals.js`）渲染，同時非同步呼叫 `loadFestivals()`。若 Supabase 連線成功，資料會即時替換為遠端版本（以 `v_festivals_full` view 為準）。欄位為 snake_case，前端統一透過 `loadFestivals.js` 中的 `mapRow()` 轉換為 camelCase。
+
+---
+
+## 部署（Cloudflare Workers）
+
+```bash
+npm run deploy
+```
+
+`wrangler.jsonc` 已設定 SPA fallback（所有未知路徑回傳 `index.html`），無需額外設定即可支援 client-side routing。部署後的預設網址為 `https://island-sound.<帳號>.workers.dev`。
 
 ---
 
 ## Roadmap
 
-- [ ] 串接 Supabase（音樂祭資料、使用者收藏）
-- [ ] 投稿表單（樂迷補充新音樂祭資料）
-- [ ] 公開部署
+- [x] 互動式月份地圖 + pin 聚合
+- [x] 篩選器（地區、時間範圍、關鍵字）
+- [x] 收藏與排序
+- [x] 音樂祭詳情 overlay
+- [x] 響應式佈局（Mobile / Tablet / Desktop）
+- [x] Supabase 資料整合（附本機 fallback）
+- [x] 投稿 Modal
+- [x] Cloudflare Workers 部署設定
+- [ ] 使用者收藏持久化（localStorage 或 Supabase）
+- [ ] 月曆檢視模式
+- [ ] 音樂祭官方圖片整合
 
 ---
 

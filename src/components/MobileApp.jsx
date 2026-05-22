@@ -225,6 +225,7 @@ export function MobileApp({
   onApply,
   onReset,
   onOpen,
+  onSubmit,
 }) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const activeCount = visible.length;
@@ -428,6 +429,9 @@ export function MobileApp({
       <footer className="m-footer">
         <div className="serif">島嶼樂遊</div>
         <div className="mono">ISLAND · SOUND · 2026</div>
+        <div className="mono" style={{ marginTop: '4px', opacity: 0.6, fontSize: '9px' }}>
+          如資料有誤，歡迎使用<button onClick={onSubmit} style={{ background: 'none', border: 'none', padding: 0, textDecoration: 'underline', textUnderlineOffset: '2px', cursor: 'pointer', font: 'inherit', color: 'inherit', letterSpacing: 'inherit' }}>投稿</button>功能給我們回饋
+        </div>
         <div className="m-footer-links mono">
           <a href="#">關於</a>
           <a href="#">聯絡</a>

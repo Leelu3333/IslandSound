@@ -4,15 +4,9 @@ import { TaiwanMap } from './components/TaiwanMap.jsx';
 import { MobileApp } from './components/MobileApp.jsx';
 import { TabletApp } from './components/TabletApp.jsx';
 import { FestivalDetail } from './components/FestivalDetail.jsx';
-import {
-  useTweaks,
-  TweaksPanel,
-  TweakSection,
-  TweakRadio,
-  TweakToggle,
-} from './components/tweaks/TweaksPanel.jsx';
 import { REGIONS, MONTHS } from './data/festivals.js';
 import { loadFestivals, FALLBACK_FESTIVALS } from './lib/loadFestivals.js';
+import { SubmitModal } from './components/SubmitModal.jsx';
 
 // ───────────────────────── Responsive hook ─────────────────────────
 // 回傳 'mobile' (<768)、'tablet' (768–1279)、'desktop' (>=1280)
@@ -33,62 +27,6 @@ function useViewport() {
   return vp;
 }
 
-const PALETTES = {
-  warm: {
-    bg: '#FAF7F2',
-    paper: '#F1EBE0',
-    paperDeep: '#E7DFCF',
-    ink: '#2A2622',
-    inkSoft: '#6B5F50',
-    inkFaint: '#C9BFAF',
-    camel: '#B89B7A',
-    camelDeep: '#8C6F50',
-    accent: '#7C8A4E', // olive
-  },
-  moss: {
-    bg: '#F4F2EB',
-    paper: '#E8E8DA',
-    paperDeep: '#D9DCC4',
-    ink: '#1F2A22',
-    inkSoft: '#5A6553',
-    inkFaint: '#B8BFA9',
-    camel: '#8B9670',
-    camelDeep: '#5E6B49',
-    accent: '#A6543B', // terracotta
-  },
-  dusk: {
-    bg: '#F2F0F1',
-    paper: '#E6E2E4',
-    paperDeep: '#D5CFD3',
-    ink: '#262128',
-    inkSoft: '#5E5562',
-    inkFaint: '#BFB6BF',
-    camel: '#8C7A91',
-    camelDeep: '#5F4F66',
-    accent: '#C49362', // amber
-  },
-};
-
-const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/ {
-  palette: 'warm',
-  density: 'comfortable',
-  showSerif: true,
-}; /*EDITMODE-END*/
-
-function applyPalette(name) {
-  const p = PALETTES[name] || PALETTES.warm;
-  const root = document.documentElement;
-  root.style.setProperty('--bg', p.bg);
-  root.style.setProperty('--paper', p.paper);
-  root.style.setProperty('--paper-deep', p.paperDeep);
-  root.style.setProperty('--ink', p.ink);
-  root.style.setProperty('--ink-soft', p.inkSoft);
-  root.style.setProperty('--ink-faint', p.inkFaint);
-  root.style.setProperty('--camel', p.camel);
-  root.style.setProperty('--camel-deep', p.camelDeep);
-  root.style.setProperty('--accent', p.accent);
-}
-
 function fmtDate(s) {
   const [y, m, d] = s.split('-');
   return `${parseInt(m)}.${parseInt(d)}`;
@@ -102,7 +40,7 @@ function fmtRange(a, b) {
 }
 
 // ───────────────────────── Header ─────────────────────────
-function Header() {
+function Header({ onSubmit }) {
   return (
     <header className="site-header">
       <div className="logo">
@@ -150,7 +88,7 @@ function Header() {
         <a href="#" className="nav-link">
           收藏
         </a>
-        <button className="btn-ghost mono">投稿 ↗</button>
+        <button className="btn-ghost mono" onClick={onSubmit}>投稿 ↗</button>
       </nav>
     </header>
   );
@@ -309,6 +247,7 @@ function FilterPanel({ state, setState, results, onApply, onReset }) {
           placeholder="搜尋音樂祭、地區、藝人…"
           value={state.q}
           onChange={(e) => setState((s) => ({ ...s, q: e.target.value }))}
+          onKeyDown={(e) => e.key === 'Enter' && onApply()}
         />
 
         {state.q && (
@@ -406,6 +345,9 @@ function FilterPanel({ state, setState, results, onApply, onReset }) {
 
       <div className="panel-footnote mono">
         ※ 資料每週一更新 · 末次同步 04 / 28
+        <div style={{ marginTop: '8px', opacity: 0.7 }}>
+          如資料有誤，歡迎使用投稿功能告訴我們
+        </div>
       </div>
     </aside>
   );
@@ -750,57 +692,8 @@ function FestivalList({ festivals, hoveredId, setHoveredId, onSave, onOpen }) {
   );
 }
 
-// Custom palette picker (3 stacked swatch rows)
-function PalettePicker({ value, onChange }) {
-  const opts = [
-    {
-      v: 'warm',
-      label: 'Warm camel',
-      colors: ['#FAF7F2', '#F1EBE0', '#B89B7A', '#7C8A4E', '#2A2622'],
-    },
-    {
-      v: 'moss',
-      label: 'Moss field',
-      colors: ['#F4F2EB', '#E8E8DA', '#8B9670', '#A6543B', '#1F2A22'],
-    },
-    {
-      v: 'dusk',
-      label: 'Dusk plum',
-      colors: ['#F2F0F1', '#E6E2E4', '#8C7A91', '#C49362', '#262128'],
-    },
-  ];
-
-  return (
-    <div className="palette-picker">
-      {opts.map((o) => (
-        <button
-          key={o.v}
-          type="button"
-          className={`palette-row ${value === o.v ? 'palette-row--on' : ''}`}
-          onClick={() => onChange(o.v)}
-        >
-          <div className="palette-swatches">
-            {o.colors.map((c, i) => (
-              <span key={i} style={{ background: c }} />
-            ))}
-          </div>
-          <div className="palette-name">{o.label}</div>
-          {value === o.v && <div className="palette-check">✓</div>}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 // ───────────────────────── App root ─────────────────────────
 function App() {
-  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
-  useEffect(() => applyPalette(t.palette), [t.palette]);
-  useEffect(() => {
-    document.documentElement.dataset.density = t.density;
-    document.documentElement.dataset.serif = t.showSerif ? 'on' : 'off';
-  }, [t.density, t.showSerif]);
-
   const viewport = useViewport(); // 'mobile' | 'tablet' | 'desktop'
 
   const [festivals, setFestivals] = useState(FALLBACK_FESTIVALS);
@@ -815,6 +708,7 @@ function App() {
   const [hoveredId, setHoveredId] = useState(null);
   const [sortMode, setSortMode] = useState('date');
   const [openId, setOpenId] = useState(null);
+  const [submitOpen, setSubmitOpen] = useState(false);
 
   const BLANK_FILTER = {
     q: '',
@@ -906,16 +800,10 @@ function App() {
           onApply={handleApply}
           onReset={handleReset}
           onOpen={setOpenId}
+          onSubmit={() => setSubmitOpen(true)}
         />
         {detailOverlay}
-        <TweaksPanel title="Tweaks">
-          <TweakSection label="Palette">
-            <PalettePicker
-              value={t.palette}
-              onChange={(v) => setTweak('palette', v)}
-            />
-          </TweakSection>
-        </TweaksPanel>
+        <SubmitModal open={submitOpen} onClose={() => setSubmitOpen(false)} />
       </div>
     );
   }
@@ -941,16 +829,10 @@ function App() {
           onApply={handleApply}
           onReset={handleReset}
           onOpen={setOpenId}
+          onSubmit={() => setSubmitOpen(true)}
         />
         {detailOverlay}
-        <TweaksPanel title="Tweaks">
-          <TweakSection label="Palette">
-            <PalettePicker
-              value={t.palette}
-              onChange={(v) => setTweak('palette', v)}
-            />
-          </TweakSection>
-        </TweaksPanel>
+        <SubmitModal open={submitOpen} onClose={() => setSubmitOpen(false)} />
       </div>
     );
   }
@@ -958,7 +840,7 @@ function App() {
   // ──── Desktop branch (>=1280px) ────
   return (
     <div className="app">
-      <Header />
+      <Header onSubmit={() => setSubmitOpen(true)} />
       <Banner
         activeMonth={mapMonth}
         setActiveMonth={setMapMonth}
@@ -1001,8 +883,11 @@ function App() {
           <div className="serif">島嶼樂遊</div>
           <div className="mono">ISLAND · SOUND · 2026</div>
         </div>
-        <div className="footer-mid mono">
-          一份非營利的台灣音樂祭索引 · 由樂迷編輯與維護
+        <div className="footer-mid">
+          <div className="mono">一份非營利的台灣音樂祭索引 · 由樂迷編輯與維護</div>
+          <div className="mono" style={{ marginTop: '6px', opacity: 0.7 }}>
+            如資料有誤，歡迎使用 <button onClick={() => setSubmitOpen(true)} style={{ background: 'none', border: 'none', padding: 0, textDecoration: 'underline', textUnderlineOffset: '3px', cursor: 'pointer', font: 'inherit', color: 'inherit', letterSpacing: 'inherit' }}>投稿</button> 功能給我們回饋
+          </div>
         </div>
         <div className="footer-right mono">
           <a href="#">關於</a>
@@ -1013,32 +898,7 @@ function App() {
       </footer>
 
       {detailOverlay}
-
-      <TweaksPanel title="Tweaks">
-        <TweakSection label="Palette">
-          <PalettePicker
-            value={t.palette}
-            onChange={(v) => setTweak('palette', v)}
-          />
-        </TweakSection>
-        <TweakSection label="Layout">
-          <TweakRadio
-            label="Density"
-            value={t.density}
-            onChange={(v) => setTweak('density', v)}
-            options={[
-              { label: 'Spacious', value: 'comfortable' },
-              { label: 'Compact', value: 'compact' },
-            ]}
-          />
-
-          <TweakToggle
-            label="Serif headings"
-            value={t.showSerif}
-            onChange={(v) => setTweak('showSerif', v)}
-          />
-        </TweakSection>
-      </TweaksPanel>
+      <SubmitModal open={submitOpen} onClose={() => setSubmitOpen(false)} />
     </div>
   );
 }

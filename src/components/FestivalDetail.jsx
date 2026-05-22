@@ -247,6 +247,9 @@ export function FestivalDetail({ festival, onClose, onSave }) {
         <footer className="detail-foot">
           <div className="mono">島嶼樂遊 · ISLAND SOUND · 2026</div>
           <div className="mono">資訊來源：主辦單位官方公告，異動以官方為準。</div>
+          <div className="mono" style={{ marginTop: '6px', opacity: 0.6 }}>
+            如資料有誤，歡迎使用投稿功能給我們回饋 ↗
+          </div>
         </footer>
       </div>
     </div>

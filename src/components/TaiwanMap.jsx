@@ -282,7 +282,7 @@ export function TaiwanMap({ pins, activeMonth, activeRegion, onPinClick, hovered
         // 只要同地區任一節目被 hover，整個地區 pin 都顯示 hover 狀態
         const isHover = regionGroup.some((f) => f.id === hoveredId);
         const isFiltered = activeRegion && activeRegion !== p.region;
-        const hasMultiple = regionGroup.length > 1;
+        const hasMultiple = group.length > 1;
         const labelLeft = cx < 280;
         const labelOffsetX = labelLeft ? -14 : 14;
 
@@ -347,7 +347,7 @@ export function TaiwanMap({ pins, activeMonth, activeRegion, onPinClick, hovered
                 <circle cx="10" cy="-16" r="8" fill="var(--accent)" stroke="var(--bg)" strokeWidth="1.5" />
                 <text x="10" y="-12" textAnchor="middle" fontSize="9" fill="var(--bg)"
                   fontFamily="'JetBrains Mono', monospace" fontWeight="700">
-                  {regionGroup.length}
+                  {group.length}
                 </text>
               </g>
             }
@@ -359,11 +359,11 @@ export function TaiwanMap({ pins, activeMonth, activeRegion, onPinClick, hovered
               const sideLeft = cx >= 280;
 
               if (hasMultiple) {
-                /* 多筆資料：列出所有節目名稱與日期 */
+                /* 多筆資料：列出當月節目名稱與日期 */
                 const tooltipW = 310;
                 const headerH = 46;
                 const rowH = 56;
-                const tooltipH = headerH + rowH * regionGroup.length + 12;
+                const tooltipH = headerH + rowH * group.length + 12;
                 const tx = sideLeft ? -(tooltipW + 18) : 18;
                 const ty = -tooltipH / 2;
 
@@ -381,13 +381,13 @@ export function TaiwanMap({ pins, activeMonth, activeRegion, onPinClick, hovered
                     </text>
                     <text x={tooltipW - 16} y="20" textAnchor="end" fontSize="11"
                       fill="var(--accent)" fontFamily="'JetBrains Mono', monospace" letterSpacing="1">
-                      {regionGroup.length} 場音樂祭
+                      {group.length} 場音樂祭
                     </text>
                     <line x1="12" y1="32" x2={tooltipW - 12} y2="32"
                       stroke="var(--paper-deep)" strokeWidth="0.6" opacity="0.3" />
 
                     {/* 各節目列 */}
-                    {regionGroup.map((f, idx) => (
+                    {group.map((f, idx) => (
                       <g key={f.id} transform={`translate(0, ${headerH + rowH * idx})`}>
                         {idx > 0 &&
                           <line x1="12" y1="0" x2={tooltipW - 12} y2="0"
