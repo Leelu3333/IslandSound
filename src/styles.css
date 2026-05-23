@@ -97,17 +97,65 @@ a { color: inherit; }
   height: 1px;
   background: var(--ink);
 }
-.btn-ghost {
-  background: transparent;
-  border: 1px solid var(--ink-faint);
+/* ═══════════════════════════════════════════════════════════
+   Unified button system  ·  統一按鈕系統
+   用法： .btn + 變體(--primary/--secondary/--ghost)
+          + 尺寸(--sm/--lg) + 修飾(--grow/--block)
+   ─────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.07em;
+  border: 1px solid transparent;
   border-radius: 999px;
+  padding: 12px 22px;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--camel-deep);
+  outline-offset: 2px;
+}
+
+/* ── 變體 variants ── */
+.btn--primary {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.btn--primary:hover { background: var(--accent); border-color: var(--accent); }
+
+.btn--secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--ink-faint);
+}
+.btn--secondary:hover { border-color: var(--ink); }
+
+.btn--ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--ink-faint);
   padding: 8px 16px;
   font-size: 11px;
   letter-spacing: 0.1em;
-  color: var(--ink);
-  transition: all 0.2s;
 }
-.btn-ghost:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn--ghost:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* ── 尺寸 sizes ── */
+.btn--sm { padding: 11px 20px; font-size: 12px; letter-spacing: 0.08em; }
+.btn--lg { padding: 15px 26px; font-size: 14px; letter-spacing: 0.06em; }
+
+/* ── 修飾 modifiers ── */
+.btn--grow  { flex: 1; }            /* 在 flex 列中填滿剩餘空間 */
+.btn--block { display: flex; width: 100%; }
 
 /* ─── Banner ─── */
 .banner {
@@ -457,29 +505,7 @@ a { color: inherit; }
   gap: 10px;
   margin-top: 28px;
 }
-.btn-primary {
-  flex: 1;
-  background: var(--ink);
-  color: var(--bg);
-  border: 1px solid var(--ink);
-  border-radius: 999px;
-  padding: 12px 20px;
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  transition: all 0.2s;
-}
-.btn-primary:hover { background: var(--accent); border-color: var(--accent); }
-.btn-secondary {
-  flex: 0 0 auto;
-  background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--ink-faint);
-  border-radius: 999px;
-  padding: 12px 22px;
-  font-size: 13px;
-  transition: all 0.2s;
-}
-.btn-secondary:hover { border-color: var(--ink); }
+/* desktop 篩選按鈕 → 已併入統一 .btn 系統 (.btn .btn--primary .btn--grow / .btn .btn--secondary) */
 
 .panel-footnote {
   margin-top: 36px;
@@ -951,6 +977,73 @@ a { color: inherit; }
 .m-logo .serif { font-size: 17px; font-weight: 500; }
 .m-logo .mono  { font-size: 8px; letter-spacing: 0.18em; margin-top: 2px; color: var(--ink-soft); }
 
+/* ─── Mobile 導覽選單（依整體暖米色文學風） ─── */
+.m-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(40, 30, 20, 0.42);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+.m-nav-backdrop.is-open { opacity: 1; pointer-events: auto; }
+
+.m-nav-menu {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 41;
+  background: var(--bg);
+  border-bottom: 1px solid var(--ink-faint);
+  border-radius: 0 0 20px 20px;
+  padding: 18px 22px 26px;
+  box-shadow: 0 28px 64px -28px rgba(40, 30, 20, 0.45);
+  transform: translateY(-100%);
+  transition: transform 0.34s cubic-bezier(.32, .72, .32, 1);
+}
+.m-nav-menu.is-open { transform: translateY(0); }
+
+.m-nav-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.m-nav-brand { display: flex; flex-direction: column; line-height: 1.1; }
+.m-nav-brand .serif { font-size: 17px; font-weight: 500; color: var(--ink); }
+.m-nav-brand .mono  { font-size: 8px; letter-spacing: 0.18em; margin-top: 2px; color: var(--ink-soft); }
+.m-nav-close {
+  width: 32px; height: 32px;
+  background: transparent;
+  border: 1px solid var(--ink-faint);
+  border-radius: 50%;
+  color: var(--ink-soft);
+  font-family: var(--font-serif);
+  font-size: 20px;
+  line-height: 1;
+  transition: all 0.18s;
+}
+.m-nav-close:hover { border-color: var(--ink); color: var(--ink); }
+
+.m-nav-links { display: flex; flex-direction: column; }
+.m-nav-link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 15px 4px;
+  border-bottom: 1px solid var(--paper-deep);
+  text-decoration: none;
+  color: var(--ink);
+}
+.m-nav-link .serif { font-size: 20px; font-weight: 500; }
+.m-nav-link .mono  { font-size: 9px; letter-spacing: 0.14em; color: var(--ink-faint); }
+.m-nav-link--on .serif { color: var(--camel-deep); }
+.m-nav-link--on .mono  { color: var(--camel); }
+
+.m-nav-submit { margin-top: 20px; }
+
 /* Banner */
 .m-banner {
   padding: 28px 22px 14px;
@@ -1377,26 +1470,7 @@ a { color: inherit; }
   gap: 10px;
   margin-top: 8px;
 }
-.m-btn-primary {
-  flex: 1;
-  background: var(--ink);
-  color: var(--bg);
-  border: none;
-  border-radius: 999px;
-  padding: 14px;
-  font-size: 14px;
-  font-family: inherit;
-  letter-spacing: 0.06em;
-}
-.m-btn-secondary {
-  background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--ink-faint);
-  border-radius: 999px;
-  padding: 14px 24px;
-  font-size: 14px;
-  font-family: inherit;
-}
+/* mobile 表單按鈕 → 已併入統一 .btn 系統 (.btn .btn--primary .btn--lg .btn--grow / .btn .btn--secondary .btn--lg) */
 
 /* ═══════════════════════════════════════════════════════════
    📱 TABLET — ported from MS/tablet-styles.css
@@ -1630,24 +1704,7 @@ a { color: inherit; }
 .t-chip--on { background: var(--paper-deep); border-color: var(--camel-deep); }
 
 .t-filter-actions { display: flex; gap: 8px; margin-top: 18px; }
-.t-btn-primary {
-  flex: 1;
-  background: var(--ink); color: var(--bg);
-  border: none; border-radius: 999px;
-  padding: 11px; font-size: 12px;
-  font-family: inherit; letter-spacing: 0.08em;
-  cursor: pointer;
-}
-.t-btn-primary:hover { background: var(--accent); }
-.t-btn-secondary {
-  background: transparent; color: var(--ink);
-  border: 1px solid var(--ink-faint);
-  border-radius: 999px;
-  padding: 11px 20px;
-  font-size: 12px; font-family: inherit;
-  cursor: pointer;
-}
-.t-btn-secondary:hover { border-color: var(--ink); }
+/* tablet 篩選按鈕 → 已併入統一 .btn 系統 (.btn .btn--primary .btn--sm .btn--grow / .btn .btn--secondary .btn--sm) */
 
 /* ── Results ── */
 .t-results {
@@ -2119,29 +2176,7 @@ a { color: inherit; }
   gap: 12px;
   justify-content: center;
 }
-.detail-cta-primary,
-.detail-cta-secondary {
-  border-radius: 999px;
-  padding: 16px 28px;
-  font-size: 14px;
-  font-family: inherit;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  letter-spacing: 0.06em;
-}
-.detail-cta-primary {
-  background: var(--ink);
-  color: var(--bg);
-  border: none;
-}
-.detail-cta-primary:hover { background: var(--accent); }
-.detail-cta-secondary {
-  background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--ink);
-}
-.detail-cta-secondary:hover { background: var(--paper); }
+/* 活動詳情 CTA → 已併入統一 .btn 系統 (.btn .btn--primary .btn--lg / .btn .btn--secondary .btn--lg) */
 .detail-foot {
   margin-top: 80px;
   padding: 36px 64px 48px;
@@ -2203,9 +2238,8 @@ a { color: inherit; }
     margin-top: 64px;
     flex-direction: column;
   }
-  .detail-cta-primary,
-  .detail-cta-secondary {
-    justify-content: center;
+  .detail-cta .btn {
+    width: 100%;
   }
   .detail-foot {
     padding: 30px 22px 42px;
@@ -2240,11 +2274,21 @@ a { color: inherit; }
   width: 100%;
   max-width: 560px;
   max-height: calc(100vh - 48px);
-  overflow-y: auto;
+  overflow-y: auto;              /* 整個 modal 一起捲動 */
   padding: 40px 44px 32px;
   box-shadow: 0 30px 80px -20px rgba(40, 30, 20, 0.35);
   animation: submit-slide 0.32s cubic-bezier(.32,.72,.32,1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-faint) transparent;
 }
+.submit-modal::-webkit-scrollbar { width: 8px; }
+.submit-modal::-webkit-scrollbar-track { background: transparent; margin: 14px 0; }
+.submit-modal::-webkit-scrollbar-thumb {
+  background: var(--ink-faint);
+  border-radius: 999px;
+  border: 2px solid var(--bg);
+}
+.submit-modal::-webkit-scrollbar-thumb:hover { background: var(--camel); }
 @keyframes submit-slide {
   from { opacity: 0; transform: translateY(16px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -2295,15 +2339,22 @@ a { color: inherit; }
 
 .submit-field { display: flex; flex-direction: column; gap: 8px; }
 .submit-field label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: block;
   font-size: 10px;
   letter-spacing: 0.14em;
   color: var(--ink-soft);
 }
-.submit-req { color: var(--accent); margin-left: 4px; }
+.submit-req {
+  color: var(--accent);
+  font-size: 0.8em;
+  position: relative;
+  top: -0.35em;
+  margin-left: 1px;
+}
+/* 必填欄位未填（is-error）時，星號也轉為錯誤紅 */
+.submit-field.is-error .submit-req { color: oklch(0.55 0.18 30); }
 .submit-counter {
+  float: right;
   font-size: 9px;
   color: var(--ink-faint);
   letter-spacing: 0.08em;
@@ -2402,27 +2453,7 @@ a { color: inherit; }
   gap: 10px;
   margin-top: 8px;
 }
-.submit-btn {
-  border: none;
-  border-radius: 999px;
-  padding: 13px 20px;
-  font-size: 13px;
-  font-family: inherit;
-  letter-spacing: 0.06em;
-  transition: all 0.18s;
-}
-.submit-btn--primary {
-  flex: 1;
-  background: var(--ink);
-  color: var(--bg);
-}
-.submit-btn--primary:hover { background: var(--accent); }
-.submit-btn--secondary {
-  background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--ink-faint);
-}
-.submit-btn--secondary:hover { border-color: var(--ink); }
+/* modal 表單按鈕 → 已併入統一 .btn 系統 (.btn .btn--primary .btn--grow / .btn .btn--secondary) */
 
 .submit-policy {
   text-align: center;
@@ -2485,10 +2516,6 @@ a { color: inherit; }
   font-size: 13px;
   color: var(--ink);
 }
-.submit-thanks .submit-btn {
-  align-self: stretch;
-}
-
 @media (max-width: 480px) {
   .submit-modal { padding: 28px 20px 24px; }
   .submit-captcha-row { grid-template-columns: 1fr auto; grid-template-rows: auto auto; }

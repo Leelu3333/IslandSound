@@ -12,17 +12,14 @@ export function SubmitModal({ open, onClose }) {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
-  // ESC 關閉 + 鎖定背景捲動
+  // 鎖定背景捲動（僅「關閉 ×」或「取消」可關閉；背景點擊與 ESC 皆不關閉）
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = '';
-      window.removeEventListener('keydown', onKey);
     };
-  }, [open, onClose]);
+  }, [open]);
 
   // 每次開啟時重設表單
   useEffect(() => {
@@ -70,8 +67,8 @@ export function SubmitModal({ open, onClose }) {
   ));
 
   return (
-    <div className="submit-backdrop" onClick={onClose}>
-      <div className="submit-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="submit-backdrop">
+      <div className="submit-modal">
         <button className="submit-x" onClick={onClose} aria-label="關閉">×</button>
 
         {submitted ? (
@@ -83,7 +80,7 @@ export function SubmitModal({ open, onClose }) {
               <div><span className="mono">暱稱</span><span>{form.nick}</span></div>
               <div><span className="mono">主旨</span><span>{form.subject}</span></div>
             </div>
-            <button className="submit-btn submit-btn--primary" onClick={onClose}>關閉</button>
+            <button className="btn btn--primary btn--block" onClick={onClose}>關閉</button>
           </div>
         ) : (
           <>
@@ -98,7 +95,7 @@ export function SubmitModal({ open, onClose }) {
             <form className="submit-form" onSubmit={handleSubmit} noValidate>
               <div className={`submit-field ${errors.nick ? 'is-error' : ''}`}>
                 <label className="mono" htmlFor="sub-nick">
-                  暱稱 <span className="submit-req">*</span>
+                  暱稱<span className="submit-req">*</span>
                 </label>
                 <input
                   id="sub-nick"
@@ -113,7 +110,7 @@ export function SubmitModal({ open, onClose }) {
 
               <div className={`submit-field ${errors.subject ? 'is-error' : ''}`}>
                 <label className="mono" htmlFor="sub-subject">
-                  主旨 <span className="submit-req">*</span>
+                  主旨<span className="submit-req">*</span>
                 </label>
                 <input
                   id="sub-subject"
@@ -128,7 +125,7 @@ export function SubmitModal({ open, onClose }) {
 
               <div className={`submit-field ${errors.body ? 'is-error' : ''}`}>
                 <label className="mono" htmlFor="sub-body">
-                  內容 <span className="submit-req">*</span>
+                  內容<span className="submit-req">*</span>
                   <span className="submit-counter mono">{form.body.length} / 1000</span>
                 </label>
                 <textarea
@@ -144,7 +141,7 @@ export function SubmitModal({ open, onClose }) {
 
               <div className={`submit-field submit-captcha ${errors.captcha ? 'is-error' : ''}`}>
                 <label className="mono" htmlFor="sub-captcha">
-                  驗證碼 <span className="submit-req">*</span>
+                  驗證碼<span className="submit-req">*</span>
                 </label>
                 <div className="submit-captcha-row">
                   <div className="submit-captcha-box serif" aria-label={`驗證碼 ${captchaCode}`}>
@@ -185,8 +182,8 @@ export function SubmitModal({ open, onClose }) {
               </div>
 
               <div className="submit-actions">
-                <button type="button" className="submit-btn submit-btn--secondary" onClick={onClose}>取消</button>
-                <button type="submit" className="submit-btn submit-btn--primary">送出投稿</button>
+                <button type="button" className="btn btn--secondary" onClick={onClose}>取消</button>
+                <button type="submit" className="btn btn--primary btn--grow">送出投稿</button>
               </div>
 
               <div className="submit-policy mono">

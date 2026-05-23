@@ -238,8 +238,8 @@ export function FestivalDetail({ festival, onClose, onSave }) {
         </section>
 
         <div className="detail-cta">
-          <button className="detail-cta-primary">前往官方購票 ↗</button>
-          <button className="detail-cta-secondary" onClick={() => onSave(f.id)}>
+          <button className="btn btn--primary btn--lg">前往官方購票 ↗</button>
+          <button className="btn btn--secondary btn--lg" onClick={() => onSave(f.id)}>
             <svg viewBox="0 0 24 24" width="14" height="14">
               <path
                 d="M12 21s-7.5-4.5-9.5-9.5C1 7.5 4 4 7.5 4c1.7 0 3.3 0.8 4.5 2.2C13.2 4.8 14.8 4 16.5 4 20 4 23 7.5 21.5 11.5 19.5 16.5 12 21 12 21Z"

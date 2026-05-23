@@ -187,10 +187,10 @@ function TabletFilter({ draft, setDraft, applied, results, onApply, onReset }) {
       </div>
 
       <div className="t-filter-actions">
-        <button className="t-btn-primary" onClick={onApply}>
+        <button className="btn btn--primary btn--sm btn--grow" onClick={onApply}>
           套用篩選
         </button>
-        <button className="t-btn-secondary" onClick={onReset}>
+        <button className="btn btn--secondary btn--sm" onClick={onReset}>
           重設
         </button>
       </div>
@@ -283,6 +283,7 @@ export function TabletApp({
           <a href="#" className="t-nav-link">
             收藏
           </a>
+          <button className="btn btn--ghost mono" onClick={onSubmit}>投稿 ↗</button>
         </nav>
       </header>
 

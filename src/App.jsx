@@ -88,7 +88,7 @@ function Header({ onSubmit }) {
         <a href="#" className="nav-link">
           收藏
         </a>
-        <button className="btn-ghost mono" onClick={onSubmit}>投稿 ↗</button>
+        <button className="btn btn--ghost mono" onClick={onSubmit}>投稿 ↗</button>
       </nav>
     </header>
   );
@@ -335,10 +335,10 @@ function FilterPanel({ state, setState, results, onApply, onReset }) {
       </FilterSection>
 
       <div className="panel-actions">
-        <button className="btn-primary" onClick={onApply}>
+        <button className="btn btn--primary btn--grow" onClick={onApply}>
           套用篩選
         </button>
-        <button className="btn-secondary" onClick={onReset}>
+        <button className="btn btn--secondary" onClick={onReset}>
           重設
         </button>
       </div>

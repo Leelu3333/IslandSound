@@ -191,11 +191,11 @@ function FilterSheet({ open, onClose, draft, setDraft, onApply, onReset }) {
         </div>
 
         <div className="m-sheet-actions">
-          <button className="m-btn-secondary" onClick={onReset}>
+          <button className="btn btn--secondary btn--lg" onClick={onReset}>
             重設
           </button>
           <button
-            className="m-btn-primary"
+            className="btn btn--primary btn--lg btn--grow"
             onClick={() => {
               onApply();
               onClose();
@@ -228,6 +228,7 @@ export function MobileApp({
   onSubmit,
 }) {
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const activeCount = visible.length;
 
   // 時間範圍顯示文字
@@ -248,7 +249,12 @@ export function MobileApp({
     <div className="m-app">
       {/* Header */}
       <header className="m-header">
-        <button className="m-icon-btn" aria-label="menu">
+        <button
+          className="m-icon-btn"
+          aria-label="選單"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(true)}
+        >
           <svg
             viewBox="0 0 24 24"
             width="20"
@@ -280,6 +286,40 @@ export function MobileApp({
           </svg>
         </button>
       </header>
+
+      {/* 導覽選單 */}
+      <div
+        className={`m-nav-backdrop ${menuOpen ? 'is-open' : ''}`}
+        onClick={() => setMenuOpen(false)}
+        aria-hidden="true"
+      />
+      <nav className={`m-nav-menu ${menuOpen ? 'is-open' : ''}`} aria-label="主選單">
+        <div className="m-nav-top">
+          <div className="m-nav-brand">
+            <span className="serif">島嶼樂遊</span>
+            <span className="mono">ISLAND · SOUND</span>
+          </div>
+          <button className="m-nav-close" onClick={() => setMenuOpen(false)} aria-label="關閉選單">×</button>
+        </div>
+        <div className="m-nav-links">
+          <a href="#" className="m-nav-link m-nav-link--on" onClick={() => setMenuOpen(false)}>
+            <span className="serif">音樂祭</span><span className="mono">FESTIVALS</span>
+          </a>
+          <a href="#" className="m-nav-link" onClick={() => setMenuOpen(false)}>
+            <span className="serif">月曆</span><span className="mono">CALENDAR</span>
+          </a>
+          <a href="#" className="m-nav-link" onClick={() => setMenuOpen(false)}>
+            <span className="serif">專欄</span><span className="mono">COLUMN</span>
+          </a>
+          <a href="#" className="m-nav-link" onClick={() => setMenuOpen(false)}>
+            <span className="serif">收藏</span><span className="mono">SAVED</span>
+          </a>
+        </div>
+        <button
+          className="btn btn--primary btn--block m-nav-submit"
+          onClick={() => { setMenuOpen(false); onSubmit(); }}
+        >投稿 ↗</button>
+      </nav>
 
       {/* Banner */}
       <section className="m-banner">
