@@ -7,6 +7,19 @@ import { FestivalDetail } from './components/FestivalDetail.jsx';
 import { REGIONS, MONTHS } from './data/festivals.js';
 import { loadFestivals, FALLBACK_FESTIVALS } from './lib/loadFestivals.js';
 import { SubmitModal } from './components/SubmitModal.jsx';
+import { AuthModal } from './components/AuthModal.jsx';
+import { AuthPage } from './components/AuthPage.jsx';
+import { LibraryPage } from './components/LibraryPage.jsx';
+import { LibraryMobile } from './components/LibraryMobile.jsx';
+import { LibraryTablet } from './components/LibraryTablet.jsx';
+import { getSession, onAuthChange, signOut, displayNameOf } from './lib/auth.js';
+import {
+  getGuestFavorites,
+  toggleGuestFavorite,
+  addFavorite,
+  removeFavorite,
+  mergeGuestFavorites,
+} from './lib/favorites.js';
 
 // ───────────────────────── Responsive hook ─────────────────────────
 // 回傳 'mobile' (<768)、'tablet' (768–1279)、'desktop' (>=1280)
@@ -40,7 +53,7 @@ function fmtRange(a, b) {
 }
 
 // ───────────────────────── Header ─────────────────────────
-function Header({ onSubmit }) {
+function Header({ onSubmit, user, onLogin, onLogout, savedOnly, onToggleSaved, onOpenLibrary }) {
   return (
     <header className="site-header">
       <div className="logo">
@@ -76,7 +89,11 @@ function Header({ onSubmit }) {
         </div>
       </div>
       <nav className="site-nav">
-        <a href="#" className="nav-link nav-link--active">
+        <a
+          href="#"
+          className={`nav-link ${savedOnly ? '' : 'nav-link--active'}`}
+          onClick={(e) => { e.preventDefault(); onToggleSaved?.(false); }}
+        >
           音樂祭
         </a>
         <a href="#" className="nav-link">
@@ -85,10 +102,25 @@ function Header({ onSubmit }) {
         <a href="#" className="nav-link">
           專欄
         </a>
-        <a href="#" className="nav-link">
+        <a
+          href="#"
+          className="nav-link"
+          onClick={(e) => { e.preventDefault(); onOpenLibrary?.(); }}
+        >
           收藏
         </a>
         <button className="btn btn--ghost mono" onClick={onSubmit}>投稿 ↗</button>
+        {user ? (
+          <div className="auth-chip">
+            <span className="auth-chip-avatar" aria-hidden>
+              {displayNameOf(user).charAt(0)}
+            </span>
+            <span className="auth-chip-email mono">{displayNameOf(user)}</span>
+            <button className="auth-chip-out" onClick={onLogout}>登出</button>
+          </div>
+        ) : (
+          <button className="btn btn--ghost mono" onClick={onLogin}>登入</button>
+        )}
       </nav>
     </header>
   );
@@ -710,6 +742,44 @@ function App() {
   const [openId, setOpenId] = useState(null);
   const [submitOpen, setSubmitOpen] = useState(false);
 
+  // ──── 會員登入 + 收藏 ────
+  const [session, setSession] = useState(null);
+  const [authOpen, setAuthOpen] = useState(false);
+  // route：桌機版整頁切換 'home' | 'library' | 'auth'（取代舊的 savedOnly 收藏分頁）
+  const [route, setRoute] = useState('home');
+  const [authReturn, setAuthReturn] = useState('home');
+  const openAuth = () => {
+    setAuthReturn(route);
+    setRoute('auth');
+  };
+  const [savedOnly, setSavedOnly] = useState(false); // 行動／平板版仍沿用：只顯示已收藏
+  // 收藏的 festival id 集合（單一真實來源，與 festivals 重新載入解耦）
+  const [savedIds, setSavedIds] = useState(() => new Set(getGuestFavorites()));
+  const user = session?.user ?? null;
+
+  // 初始化 session 並監聽登入狀態變化
+  useEffect(() => {
+    let active = true;
+    getSession().then((s) => {
+      if (active) setSession(s);
+    });
+    const unsub = onAuthChange((s) => setSession(s));
+    return () => {
+      active = false;
+      unsub();
+    };
+  }, []);
+
+  // 登入 → 合併訪客收藏並載入帳號收藏；登出 → 回到訪客收藏
+  useEffect(() => {
+    if (user) {
+      mergeGuestFavorites(user.id).then((ids) => setSavedIds(new Set(ids)));
+    } else {
+      setSavedIds(new Set(getGuestFavorites()));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
   const BLANK_FILTER = {
     q: '',
     region: null,
@@ -723,8 +793,15 @@ function App() {
   const [draft, setDraft] = useState({ ...BLANK_FILTER });
   const [applied, setApplied] = useState({ ...BLANK_FILTER });
 
+  // 把收藏狀態套到每場音樂祭（saved 來自 savedIds，與資料載入解耦）
+  const decorated = useMemo(
+    () => festivals.map((f) => ({ ...f, saved: savedIds.has(f.id) })),
+    [festivals, savedIds],
+  );
+
   const visible = useMemo(() => {
-    let out = festivals.slice();
+    let out = decorated.slice();
+    if (savedOnly) out = out.filter((f) => f.saved);
     if (applied.region) out = out.filter((f) => f.region === applied.region);
     if (applied.genres.length)
       out = out.filter((f) => applied.genres.includes(f.genre));
@@ -749,12 +826,28 @@ function App() {
     if (sortMode === 'saved')
       out.sort((a, b) => Number(b.saved) - Number(a.saved));
     return out;
-  }, [festivals, applied, sortMode]);
+  }, [decorated, savedOnly, applied, sortMode]);
 
+  // 切換收藏：樂觀更新 savedIds，並依登入狀態寫進 Supabase 或 localStorage
   const handleSave = (id) => {
-    setFestivals((fs) =>
-      fs.map((f) => (f.id === id ? { ...f, saved: !f.saved } : f)),
-    );
+    const willSave = !savedIds.has(id);
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      if (willSave) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+    if (user) {
+      if (willSave) addFavorite(user.id, id);
+      else removeFavorite(user.id, id);
+    } else {
+      toggleGuestFavorite(id);
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    setSavedOnly(false);
   };
   // 地圖 pin 點擊：同時更新 draft 和 applied（即時生效）
   const handlePinClick = (p) => {
@@ -772,7 +865,7 @@ function App() {
     setDraft({ ...BLANK_FILTER });
     setApplied({ ...BLANK_FILTER });
   };
-  const selectedFestival = festivals.find((f) => f.id === openId);
+  const selectedFestival = decorated.find((f) => f.id === openId);
   const detailOverlay = selectedFestival ? (
     <FestivalDetail
       festival={selectedFestival}
@@ -781,12 +874,70 @@ function App() {
     />
   ) : null;
 
+  // 跳到首頁的「節目單」區（切回 home 後捲動到結果列表）
+  const goToFestivals = () => {
+    setRoute('home');
+    setTimeout(() => {
+      document
+        .querySelector('.results-panel')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  };
+
+  // ──── 整頁路由：登入／註冊（MK 外觀，現有 Magic Link + Google 後端）────
+  if (route === 'auth') {
+    return <AuthPage onBack={() => setRoute(authReturn)} />;
+  }
+
+  // ──── 整頁路由：我的收藏（MK 整頁設計，接真實收藏資料）────
+  if (route === 'library') {
+    // 依 viewport 選擇收藏頁的 RWD 版本（mobile / tablet / desktop）
+    const libraryProps = {
+      festivals: decorated,
+      savedIds,
+      onToggleSave: handleSave,
+      onOpenDetail: setOpenId,
+      onNavigateHome: () => setRoute('home'),
+      onBrowseFestivals: goToFestivals,
+      onLogin: openAuth,
+      onLogout: handleLogout,
+      onSubmit: () => setSubmitOpen(true),
+      user,
+    };
+    let libraryView;
+    if (viewport === 'mobile') {
+      libraryView = <LibraryMobile {...libraryProps} />;
+    } else if (viewport === 'tablet') {
+      const orientation =
+        typeof window !== 'undefined' && window.innerWidth >= window.innerHeight
+          ? 'landscape'
+          : 'portrait';
+      libraryView = <LibraryTablet {...libraryProps} orientation={orientation} />;
+    } else {
+      libraryView = <LibraryPage {...libraryProps} />;
+    }
+    return (
+      <>
+        {libraryView}
+        {selectedFestival && (
+          <FestivalDetail
+            festival={selectedFestival}
+            onClose={() => setOpenId(null)}
+            onSave={handleSave}
+            backLabel="返回"
+          />
+        )}
+        <SubmitModal open={submitOpen} onClose={() => setSubmitOpen(false)} />
+      </>
+    );
+  }
+
   // ──── Mobile branch (<768px) ────
   if (viewport === 'mobile') {
     return (
       <div className="app">
         <MobileApp
-          festivals={festivals}
+          festivals={decorated}
           visible={visible}
           mapMonth={mapMonth}
           setMapMonth={setMapMonth}
@@ -801,9 +952,16 @@ function App() {
           onReset={handleReset}
           onOpen={setOpenId}
           onSubmit={() => setSubmitOpen(true)}
+          user={user}
+          onLogin={openAuth}
+          onLogout={handleLogout}
+          savedOnly={savedOnly}
+          onToggleSaved={setSavedOnly}
+          onOpenLibrary={() => setRoute('library')}
         />
         {detailOverlay}
         <SubmitModal open={submitOpen} onClose={() => setSubmitOpen(false)} />
+        <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
       </div>
     );
   }
@@ -813,7 +971,7 @@ function App() {
     return (
       <div className="app">
         <TabletApp
-          festivals={festivals}
+          festivals={decorated}
           visible={visible}
           mapMonth={mapMonth}
           setMapMonth={setMapMonth}
@@ -830,9 +988,16 @@ function App() {
           onReset={handleReset}
           onOpen={setOpenId}
           onSubmit={() => setSubmitOpen(true)}
+          user={user}
+          onLogin={openAuth}
+          onLogout={handleLogout}
+          savedOnly={savedOnly}
+          onToggleSaved={setSavedOnly}
+          onOpenLibrary={() => setRoute('library')}
         />
         {detailOverlay}
         <SubmitModal open={submitOpen} onClose={() => setSubmitOpen(false)} />
+        <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
       </div>
     );
   }
@@ -840,11 +1005,19 @@ function App() {
   // ──── Desktop branch (>=1280px) ────
   return (
     <div className="app">
-      <Header onSubmit={() => setSubmitOpen(true)} />
+      <Header
+        onSubmit={() => setSubmitOpen(true)}
+        user={user}
+        onLogin={openAuth}
+        onLogout={handleLogout}
+        savedOnly={savedOnly}
+        onToggleSaved={setSavedOnly}
+        onOpenLibrary={() => setRoute('library')}
+      />
       <Banner
         activeMonth={mapMonth}
         setActiveMonth={setMapMonth}
-        festivals={festivals}
+        festivals={decorated}
         activeRegion={applied.region}
         setActiveRegion={(r) => {
           setDraft((d) => ({ ...d, region: r }));
@@ -899,6 +1072,7 @@ function App() {
 
       {detailOverlay}
       <SubmitModal open={submitOpen} onClose={() => setSubmitOpen(false)} />
+      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
     </div>
   );
 }

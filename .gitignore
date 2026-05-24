@@ -37,3 +37,6 @@ lerna-debug.log*
 
 # Cowork / scraps
 scraps/
+
+# Vite 載入設定檔時的暫存檔（會自動產生，不需版控）
+vite.config.js.timestamp-*

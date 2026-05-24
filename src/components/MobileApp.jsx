@@ -226,10 +226,17 @@ export function MobileApp({
   onReset,
   onOpen,
   onSubmit,
+  user,
+  onLogin,
+  onLogout,
+  savedOnly,
+  onToggleSaved,
+  onOpenLibrary,
 }) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const activeCount = visible.length;
+  const displayName = user?.user_metadata?.name || user?.email || '會員';
 
   // 時間範圍顯示文字
   const timeLabel =
@@ -272,19 +279,7 @@ export function MobileApp({
           <span className="serif">島嶼樂遊</span>
           <span className="mono">ISLAND · SOUND</span>
         </div>
-        <button className="m-icon-btn" aria-label="saved">
-          <svg
-            viewBox="0 0 24 24"
-            width="20"
-            height="20"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinejoin="round"
-          >
-            <path d="M12 21s-7.5-4.5-9.5-9.5C1 7.5 4 4 7.5 4c1.7 0 3.3 0.8 4.5 2.2C13.2 4.8 14.8 4 16.5 4 20 4 23 7.5 21.5 11.5 19.5 16.5 12 21 12 21Z" />
-          </svg>
-        </button>
+        <span className="m-icon-btn" aria-hidden="true" style={{ visibility: 'hidden' }} />
       </header>
 
       {/* 導覽選單 */}
@@ -302,7 +297,11 @@ export function MobileApp({
           <button className="m-nav-close" onClick={() => setMenuOpen(false)} aria-label="關閉選單">×</button>
         </div>
         <div className="m-nav-links">
-          <a href="#" className="m-nav-link m-nav-link--on" onClick={() => setMenuOpen(false)}>
+          <a
+            href="#"
+            className={`m-nav-link ${savedOnly ? '' : 'm-nav-link--on'}`}
+            onClick={(e) => { e.preventDefault(); onToggleSaved?.(false); setMenuOpen(false); }}
+          >
             <span className="serif">音樂祭</span><span className="mono">FESTIVALS</span>
           </a>
           <a href="#" className="m-nav-link" onClick={() => setMenuOpen(false)}>
@@ -311,7 +310,11 @@ export function MobileApp({
           <a href="#" className="m-nav-link" onClick={() => setMenuOpen(false)}>
             <span className="serif">專欄</span><span className="mono">COLUMN</span>
           </a>
-          <a href="#" className="m-nav-link" onClick={() => setMenuOpen(false)}>
+          <a
+            href="#"
+            className={`m-nav-link ${savedOnly ? 'm-nav-link--on' : ''}`}
+            onClick={(e) => { e.preventDefault(); onOpenLibrary?.(); setMenuOpen(false); }}
+          >
             <span className="serif">收藏</span><span className="mono">SAVED</span>
           </a>
         </div>
@@ -319,6 +322,17 @@ export function MobileApp({
           className="btn btn--primary btn--block m-nav-submit"
           onClick={() => { setMenuOpen(false); onSubmit(); }}
         >投稿 ↗</button>
+        {user ? (
+          <button
+            className="btn btn--ghost btn--block m-nav-login"
+            onClick={() => { setMenuOpen(false); onLogout?.(); }}
+          >登出（{displayName}）</button>
+        ) : (
+          <button
+            className="btn btn--ghost btn--block m-nav-login"
+            onClick={() => { setMenuOpen(false); onLogin?.(); }}
+          >登入</button>
+        )}
       </nav>
 
       {/* Banner */}

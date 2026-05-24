@@ -26,8 +26,25 @@ slug 對照表（共 15 場）
 14.  spring-wave      →  春浪音樂節
 15.  fireball         →  火球祭
 
+slug 對照表（2026 新增候選，共 12 場）
+----------------------
+16.  jiucheng-party   →  舊城派對
+17.  shang-an         →  上岸音樂節
+18.  huichao          →  洄潮計畫
+19.  id-fest          →  ID.音樂節
+20.  gma-festival     →  金曲國際音樂節
+21.  kh-beer-fest     →  高雄啤酒音樂節
+22.  s2o-taiwan       →  S2O Taiwan 潑水音樂節
+23.  zhuangwei-dune   →  壯圍星夜沙丘音樂會
+24.  hohaiyan         →  貢寮國際海洋音樂祭
+25.  shanshen         →  山神祭3-穿越維度
+26.  chiu-out         →  秋OUT音樂節（禾火OUT）
+27.  rock-taichung    →  搖滾台中
+
+（各場主視覺的官方下載連結，見 Excel「KV主視覺待辦」工作表的「KV圖來源」欄）
+
 備註
 ----
-- 找不到圖的場次（之前約有 5 場）就跳過不用存，資料庫那欄會留空。
+- 找不到圖的場次就跳過不用存，資料庫那欄會留空。
 - 尺寸、檔案大小都不用先處理，原圖丟進來即可，上傳時我再幫你壓縮 / 轉檔。
 - 存好後跟我說一聲，我就接手做資料庫（加欄位、建 Storage bucket、上傳並回填網址）。

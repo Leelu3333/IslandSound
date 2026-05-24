@@ -27,7 +27,7 @@ function MediaSlot({ label, variant = 'rect' }) {
   );
 }
 
-export function FestivalDetail({ festival, onClose, onSave }) {
+export function FestivalDetail({ festival, onClose, onSave, backLabel = '返回節目單' }) {
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -73,7 +73,7 @@ export function FestivalDetail({ festival, onClose, onSave }) {
               <line x1="19" y1="12" x2="5" y2="12" />
               <polyline points="12 19 5 12 12 5" />
             </svg>
-            <span>返回節目單</span>
+            <span>{backLabel}</span>
           </button>
           <div className="detail-topbar-right">
             <button className="detail-share" aria-label="分享">

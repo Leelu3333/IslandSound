@@ -65,7 +65,22 @@ VITE_SUPABASE_URL=https://<your-project>.supabase.co
 VITE_SUPABASE_ANON_KEY=<your-anon-key>
 ```
 
-兩個變數皆未設定（或檔案不存在）時，頁面仍可正常運作，資料來自 `src/data/festivals.js` 的 `FALLBACK_FESTIVALS`。
+兩個變數皆未設定（或檔案不存在）時，頁面仍可正常運作，資料來自 `src/data/festivals.js` 的 `FALLBACK_FESTIVALS`。未設定 Supabase 時，登入按鈕仍會顯示，但收藏會以訪客模式存在瀏覽器 `localStorage`。
+
+### 會員登入設定（Supabase Auth）
+
+收藏的持久化建立在 Supabase Auth 上，需先在 Supabase 後台啟用登入方式：
+
+1. **資料表**：在 SQL Editor 執行 `supabase/migrations/20260524000000_user_favorites.sql`（建立 `user_favorites` 表與 RLS 政策）。
+2. **Email / Magic Link**：Authentication → Providers → Email 啟用（預設即開啟），即可使用免密碼登入連結。
+3. **Google OAuth**：Authentication → Providers → Google 啟用，填入 Google Cloud 的 OAuth Client ID / Secret。
+4. **Redirect URLs**：Authentication → URL Configuration 的 *Redirect URLs* 加入本機與正式網址，例如：
+   - `http://localhost:5173`
+   - `https://island-sound.<帳號>.workers.dev`
+
+   程式以 `window.location.origin` 作為登入後導回網址，未加入白名單會導致登入跳轉失敗。
+
+登入流程：訪客先以 `localStorage` 暫存收藏；登入後（`src/lib/favorites.js` 的 `mergeGuestFavorites`）會自動把暫存收藏合併進帳號並清空本機暫存。
 
 ### 可用的 npm scripts
 
@@ -93,17 +108,21 @@ island-sound/
 │   │   ├── TaiwanMap.jsx        # 手繪 SVG 台灣地圖 + 互動 pins
 │   │   ├── FestivalDetail.jsx   # 音樂祭詳情 overlay
 │   │   ├── SubmitModal.jsx      # 投稿 modal（表單驗證 + captcha）
+│   │   ├── AuthModal.jsx        # 登入 modal（Google + Magic Link）
 │   │   ├── MobileApp.jsx        # 手機版佈局（<768px）
 │   │   └── TabletApp.jsx        # 平板版佈局（768–1279px）
 │   ├── data/
 │   │   └── festivals.js         # 靜態音樂祭資料 + REGIONS / MONTHS 常數
 │   └── lib/
 │       ├── supabase.js          # Supabase client 初始化（env 未設定時為 null）
+│       ├── auth.js              # 登入 / 登出 / session 監聽
+│       ├── favorites.js         # 收藏讀寫（Supabase + localStorage 訪客合併）
 │       └── loadFestivals.js     # 從 Supabase 撈資料，失敗時回傳 null
 └── supabase/
     ├── migrations/
-    │   └── 20260510000000_init_schema.sql   # DB schema 初始化
-    └── seed.sql                             # 測試資料
+    │   ├── 20260510000000_init_schema.sql      # DB schema 初始化
+    │   └── 20260524000000_user_favorites.sql   # 使用者收藏表 + RLS
+    └── seed.sql                                # 測試資料
 ```
 
 ---
@@ -134,7 +153,8 @@ npm run deploy
 - [x] Supabase 資料整合（附本機 fallback）
 - [x] 投稿 Modal
 - [x] Cloudflare Workers 部署設定
-- [ ] 使用者收藏持久化（localStorage 或 Supabase）
+- [x] 會員登入（Google OAuth + Magic Link，採 Supabase Auth）
+- [x] 使用者收藏持久化（訪客存 localStorage，登入後自動合併進 Supabase）
 - [ ] 月曆檢視模式
 - [ ] 音樂祭官方圖片整合
 

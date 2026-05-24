@@ -217,6 +217,12 @@ export function TabletApp({
   onReset,
   onOpen,
   onSubmit,
+  user,
+  onLogin,
+  onLogout,
+  savedOnly,
+  onToggleSaved,
+  onOpenLibrary,
 }) {
   // Orientation: portrait (width < height or width <= 1024)
   const [orientation, setOrientation] = useState(() =>
@@ -271,7 +277,11 @@ export function TabletApp({
           </div>
         </div>
         <nav className="t-nav">
-          <a href="#" className="t-nav-link t-nav-link--on">
+          <a
+            href="#"
+            className={`t-nav-link ${savedOnly ? '' : 't-nav-link--on'}`}
+            onClick={(e) => { e.preventDefault(); onToggleSaved?.(false); }}
+          >
             音樂祭
           </a>
           <a href="#" className="t-nav-link">
@@ -280,10 +290,24 @@ export function TabletApp({
           <a href="#" className="t-nav-link">
             專欄
           </a>
-          <a href="#" className="t-nav-link">
+          <a
+            href="#"
+            className={`t-nav-link ${savedOnly ? 't-nav-link--on' : ''}`}
+            onClick={(e) => { e.preventDefault(); onOpenLibrary?.(); }}
+          >
             收藏
           </a>
           <button className="btn btn--ghost mono" onClick={onSubmit}>投稿 ↗</button>
+          {user ? (
+            <div className="auth-chip">
+              <span className="auth-chip-avatar" aria-hidden>
+                {(user.user_metadata?.name || user.email || '會員').charAt(0)}
+              </span>
+              <button className="auth-chip-out" onClick={onLogout}>登出</button>
+            </div>
+          ) : (
+            <button className="btn btn--ghost mono" onClick={onLogin}>登入</button>
+          )}
         </nav>
       </header>
 

@@ -1,0 +1,760 @@
+/* Auto-scoped from MD/library-mobile-styles.css — all selectors namespaced under .lib-mobile
+   so these styles never leak into the rest of the app. */
+
+.lib-mobile .ml-app {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100%;
+  padding-bottom: 56px;
+  position: relative;
+}
+.lib-mobile .ml-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 64px 18px 14px;
+  border-bottom: 1px solid var(--ink-faint);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.lib-mobile .ml-icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--ink);
+  padding: 6px;
+  display: flex;
+}
+.lib-mobile .ml-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+.lib-mobile .ml-logo .serif { font-size: 17px; font-weight: 500; }
+.lib-mobile .ml-logo .mono { font-size: 8px; letter-spacing: 0.18em; margin-top: 2px; color: var(--ink-soft); }
+.lib-mobile .ml-banner { padding: 30px 22px 8px; }
+.lib-mobile .ml-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 11px;
+  border: 1px solid var(--ink-faint);
+  border-radius: 999px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  margin-bottom: 18px;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-eyebrow-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.lib-mobile .ml-title {
+  font-size: 44px;
+  line-height: 1.02;
+  margin: 0 0 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.lib-mobile .ml-underline {
+  position: relative;
+  display: inline-block;
+}
+.lib-mobile .ml-underline::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 4px;
+  height: 8px;
+  background: var(--paper-deep);
+  z-index: -1;
+  border-radius: 2px;
+}
+.lib-mobile .ml-lede {
+  margin: 0 0 22px;
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--ink-faint);
+}
+.lib-mobile .ml-stat {
+  padding: 0 12px;
+  border-right: 1px dashed var(--ink-faint);
+}
+.lib-mobile .ml-stat:first-child { padding-left: 0; }
+.lib-mobile .ml-stat:last-child { border-right: none; padding-right: 0; }
+.lib-mobile .ml-stat-num {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.lib-mobile .ml-stat-num .unit {
+  font-size: 11px;
+  margin-left: 2px;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+.lib-mobile .ml-stat-label {
+  margin-top: 8px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-nextup-wrap { padding: 24px 22px 4px; }
+.lib-mobile .ml-nextup {
+  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--ink-faint);
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.lib-mobile .ml-frame-corner {
+  position: absolute;
+  width: 8px; height: 8px;
+  border: 1px solid var(--ink);
+}
+.lib-mobile .ml-frame-corner[data-pos="tl"] { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.lib-mobile .ml-frame-corner[data-pos="tr"] { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+.lib-mobile .ml-frame-corner[data-pos="bl"] { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+.lib-mobile .ml-frame-corner[data-pos="br"] { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+.lib-mobile .ml-nextup-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.lib-mobile .ml-nextup-tag {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-pulse {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  position: relative;
+}
+.lib-mobile .ml-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  opacity: 0.6;
+  animation: ml-pulse 1.6s ease-out infinite;
+}
+@keyframes ml-pulse {
+  0%   { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+.lib-mobile .ml-nextup-no {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-countdown {
+  font-family: var(--font-serif);
+  font-size: 60px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-top: 2px;
+}
+.lib-mobile .ml-countdown .unit {
+  font-size: 14px;
+  margin-left: 6px;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+.lib-mobile .ml-countdown-sub {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+  margin-top: -4px;
+  margin-bottom: 2px;
+}
+.lib-mobile .ml-nextup-name {
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 500;
+  margin: 0;
+}
+.lib-mobile .ml-nextup-name-en {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+  margin-top: -8px;
+}
+.lib-mobile .ml-nextup-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--ink-faint);
+  font-size: 12px;
+  color: var(--ink);
+}
+.lib-mobile .ml-dot-sep { color: var(--ink-faint); padding: 0 2px; }
+.lib-mobile .ml-nextup-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+.lib-mobile .ml-nextup-btn {
+  flex: 1;
+  background: var(--ink);
+  color: var(--bg);
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  font-family: inherit;
+}
+.lib-mobile .ml-nextup-btn--ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--ink-faint);
+}
+.lib-mobile .ml-toolbar {
+  position: sticky;
+  top: 88px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 22px;
+  margin-top: 24px;
+  background: rgba(250, 247, 242, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--ink-faint);
+  border-bottom: 1px solid var(--ink-faint);
+}
+.lib-mobile .ml-tabs {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--ink-faint);
+  border-radius: 999px;
+  padding: 3px;
+  flex: 1;
+}
+.lib-mobile .ml-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 6px 8px;
+  font-family: inherit;
+  font-size: 11px;
+  color: var(--ink-soft);
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.lib-mobile .ml-tab--on {
+  background: var(--ink);
+  color: var(--bg);
+}
+.lib-mobile .ml-tab-count {
+  font-size: 8px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: var(--paper-deep);
+  color: var(--ink-soft);
+  letter-spacing: 0.04em;
+}
+.lib-mobile .ml-tab--on .ml-tab-count {
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--bg);
+}
+.lib-mobile .ml-sort {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-sort-label { font-size: 9px; }
+.lib-mobile .ml-sort-select {
+  background: transparent;
+  border: 1px solid var(--ink-faint);
+  border-radius: 999px;
+  padding: 5px 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 18px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+  background-position: calc(100% - 9px) 50%, calc(100% - 6px) 50%;
+  background-size: 3px 3px;
+  background-repeat: no-repeat;
+}
+.lib-mobile .ml-cards {
+  padding: 16px 22px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.lib-mobile .ml-card {
+  position: relative;
+  background: var(--bg);
+  border: 1px solid var(--ink-faint);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.lib-mobile .ml-card-ribbon {
+  height: 2.5px;
+  background: var(--camel);
+}
+.lib-mobile .ml-card--past .ml-card-ribbon { background: var(--ink-faint); }
+.lib-mobile .ml-card--past .ml-card-body { opacity: 0.78; }
+.lib-mobile .ml-card-body {
+  padding: 16px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+}
+.lib-mobile .ml-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.lib-mobile .ml-cd-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 9px;
+  background: var(--paper);
+  border: 1px solid var(--ink-faint);
+  border-radius: 8px;
+  min-width: 52px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.lib-mobile .ml-cd-badge .num {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1;
+  color: var(--ink);
+}
+.lib-mobile .ml-cd-badge .lbl {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-cd-badge--past {
+  background: transparent;
+  border-style: dashed;
+}
+.lib-mobile .ml-cd-badge--past .num { color: var(--ink-soft); }
+.lib-mobile .ml-cd-badge--soon {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.lib-mobile .ml-cd-badge--soon .num, .lib-mobile .ml-cd-badge--soon .lbl { color: var(--bg); }
+.lib-mobile .ml-card-titles { flex: 1; min-width: 0; }
+.lib-mobile .ml-card-eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-card-name {
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 500;
+  margin: 4px 0 2px;
+}
+.lib-mobile .ml-card-name-en {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-card-remove {
+  background: transparent;
+  border: 1px solid var(--ink-faint);
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+.lib-mobile .ml-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  padding: 10px 0;
+  border-top: 1px dashed var(--ink-faint);
+  border-bottom: 1px dashed var(--ink-faint);
+}
+.lib-mobile .ml-meta-row {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 10px;
+  align-items: baseline;
+  margin: 0;
+}
+.lib-mobile .ml-meta-row dt {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-meta-row dd { margin: 0; font-size: 12px; color: var(--ink); }
+.lib-mobile .ml-note {
+  position: relative;
+  background: var(--paper);
+  border-radius: 8px;
+  padding: 12px 14px 12px 20px;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink);
+  font-style: italic;
+  margin: 0;
+  border: none;
+  text-align: left;
+}
+.lib-mobile .ml-note::before {
+  content: "「";
+  position: absolute;
+  left: 4px;
+  top: 6px;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  line-height: 1;
+  color: var(--camel);
+  font-style: normal;
+}
+.lib-mobile .ml-note--empty {
+  background: transparent;
+  border: 1px dashed var(--ink-faint);
+  color: var(--ink-soft);
+  font-style: normal;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  padding: 10px 12px;
+  text-align: center;
+}
+.lib-mobile .ml-note--empty::before { display: none; }
+.lib-mobile .ml-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px dashed var(--ink-faint);
+}
+.lib-mobile .ml-savedat {
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+}
+.lib-mobile .ml-savedat .heart {
+  display: inline-block;
+  margin-right: 4px;
+  color: var(--camel);
+}
+.lib-mobile .ml-empty {
+  text-align: center;
+  padding: 36px 24px;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-empty h3 { margin: 0 0 4px; color: var(--ink); font-weight: 500; font-size: 16px; }
+.lib-mobile .ml-empty p { margin: 0; font-size: 12px; }
+.lib-mobile .ml-insights {
+  margin: 28px 22px 0;
+  padding: 22px 0 0;
+  border-top: 1px solid var(--ink-faint);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.lib-mobile .ml-insights-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: -6px;
+}
+.lib-mobile .ml-insights-head h3 { margin: 0; font-size: 18px; font-weight: 500; }
+.lib-mobile .ml-insights-head .mono { font-size: 9px; letter-spacing: 0.1em; color: var(--ink-soft); }
+.lib-mobile .ml-insight-block { }
+.lib-mobile .ml-insight-label {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+}
+.lib-mobile .ml-region-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lib-mobile .ml-region-row {
+  display: grid;
+  grid-template-columns: 56px 1fr 28px;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+}
+.lib-mobile .ml-region-row .lbl { color: var(--ink); }
+.lib-mobile .ml-region-row .bar {
+  height: 6px;
+  background: var(--paper);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+}
+.lib-mobile .ml-region-row .bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--ink);
+  border-radius: 999px;
+}
+.lib-mobile .ml-region-row .num {
+  font-size: 10px;
+  color: var(--ink-soft);
+  text-align: right;
+}
+.lib-mobile .ml-month-dots {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.lib-mobile .ml-month-dot {
+  position: relative;
+  aspect-ratio: 1;
+  border: 1px solid var(--ink-faint);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lib-mobile .ml-month-dot .m {
+  font-size: 8px;
+  color: var(--ink-faint);
+}
+.lib-mobile .ml-month-dot--has {
+  background: var(--paper-deep);
+  border-color: var(--camel);
+}
+.lib-mobile .ml-month-dot--has .m { color: var(--ink); }
+.lib-mobile .ml-month-dot--has::after {
+  content: "";
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.lib-mobile .ml-month-dot--current {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.lib-mobile .ml-month-dot--current .m { color: var(--bg); }
+.lib-mobile .ml-month-foot {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin: 0;
+  line-height: 1.5;
+}
+.lib-mobile .ml-actions-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lib-mobile .ml-aside-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: 1px solid var(--ink-faint);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  text-align: left;
+}
+.lib-mobile .ml-aside-action .ico {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-recs {
+  margin: 32px 22px 0;
+  padding: 22px 0 0;
+  border-top: 1px solid var(--ink-faint);
+}
+.lib-mobile .ml-recs-head {
+  margin-bottom: 14px;
+}
+.lib-mobile .ml-recs-head h2 { font-size: 22px; font-weight: 500; margin: 0; }
+.lib-mobile .ml-recs-head .mono { font-size: 9px; letter-spacing: 0.1em; color: var(--ink-soft); margin-top: 4px; }
+.lib-mobile .ml-recs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.lib-mobile .ml-rec {
+  background: var(--paper);
+  border: 1px solid var(--ink-faint);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lib-mobile .ml-rec-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-rec-eyebrow .reason {
+  background: var(--bg);
+  border: 1px solid var(--ink-faint);
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+.lib-mobile .ml-rec-name {
+  font-size: 17px;
+  line-height: 1.25;
+  font-weight: 500;
+  margin: 2px 0 0;
+}
+.lib-mobile .ml-rec-date {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-rec-blurb {
+  margin: 2px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-rec-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--ink-faint);
+}
+.lib-mobile .ml-rec-more {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink-faint);
+  padding-bottom: 2px;
+}
+.lib-mobile .ml-rec-save {
+  background: transparent;
+  border: 1px solid var(--ink-faint);
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+}
+.lib-mobile .ml-rec-save--on { color: var(--accent); border-color: var(--accent); }
+.lib-mobile .ml-footer {
+  margin-top: 32px;
+  padding: 22px 22px;
+  text-align: center;
+  border-top: 1px solid var(--ink-faint);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+.lib-mobile .ml-footer .serif { font-size: 14px; }
+.lib-mobile .ml-footer .mono { font-size: 9px; letter-spacing: 0.16em; color: var(--ink-soft); }
+.lib-mobile .ml-footer-links { display: flex; gap: 14px; margin-top: 8px; }
+.lib-mobile .ml-footer-links a { color: var(--ink-soft); text-decoration: none; }
+
+/* ── 改用首頁漢堡標頭(m-header)後的微調 + 分頁數量徽章 ── */
+.lib-mobile .ml-toolbar { top: 52px; margin-top: 12px; }
+.lib-mobile .ml-tab-count {
+  font-size: 9px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--camel);
+  color: var(--bg);
+  letter-spacing: 0.02em;
+  font-weight: 600;
+}
+.lib-mobile .ml-tab--on .ml-tab-count {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* ── 分頁數字 → 右上角浮出小徽章（取代內嵌，避免過擠）── */
+.lib-mobile .ml-tabs { overflow: visible; }
+.lib-mobile .ml-tab { position: relative; overflow: visible; }
+.lib-mobile .ml-tab-count {
+  position: absolute;
+  top: -6px;
+  right: 2px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  background: var(--accent);
+  color: var(--bg);
+  border: 1.5px solid var(--bg);
+}
+.lib-mobile .ml-tab--on .ml-tab-count {
+  background: var(--bg);
+  color: var(--ink);
+  border-color: var(--bg);
+}
